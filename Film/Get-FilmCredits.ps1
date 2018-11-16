@@ -4,6 +4,6 @@ function Get-FilmCredits {
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [string]$ID
   )
-  $client = [tmdbclient]::new()
+  $client = [tmdbclient]::new($Script:api_key)
   return $client.getfilmcredits($ID)
 }

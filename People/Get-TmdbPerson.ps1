@@ -4,6 +4,6 @@ function Get-TmdbPerson {
     [Parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]
     [string]$PersonId
   )
-  $client = [tmdbclient]::new()
+  $client = [tmdbclient]::new($Script:api_key)
   return $client.getperson($PersonId)
 }

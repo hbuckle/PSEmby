@@ -3,7 +3,7 @@ class tmdbclient {
   [String] $api_key
   tmdbclient([String] $api_key)
   {
-    $this.api_key = $api_key
+    $this.api_key = "api_key=$api_key"
   }
   [Object] invokeapi([String] $path, [String] $querystring)
   {

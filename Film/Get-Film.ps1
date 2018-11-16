@@ -4,6 +4,6 @@ function Get-Film {
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [string]$ID
   )
-  $client = [tmdbclient]::new()
+  $client = [tmdbclient]::new($Script:api_key)
   return $client.getfilm($ID)
 }
