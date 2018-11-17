@@ -7,5 +7,5 @@ function Get-TvSeason {
     [int]$SeasonNumber
   )
   $client = [tmdbclient]::new($Script:api_key)
-  return $client.gettvseason($ShowId, $SeasonNumber) | ConvertFrom-Json
+  return $client.gettvseason($ShowId, $SeasonNumber)
 }

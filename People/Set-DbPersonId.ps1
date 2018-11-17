@@ -28,7 +28,6 @@ function Set-DbPersonId {
       }
     }
     Write-Progress -Activity "Updating people" -Completed
-    # throw "test"
   }
   catch {
     throw $_

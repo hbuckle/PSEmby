@@ -12,11 +12,18 @@ function Set-EpisodeNfo {
   )
   $file = Get-Item $PathToEpisode
   $output = $file.DirectoryName + "\" + $file.BaseName + ".nfo"
+  $json = $file.DirectoryName + "\" + $file.BaseName + ".json"
   if (Test-Path $output) {
     $episodedetails = [embymetadata.episodedetails]::Load($output)
   }
   else {
     $episodedetails = [embymetadata.episodedetails]::new()
+  }
+  if (Test-Path $json) {
+    $additional = Get-Content $json -Raw | ConvertFrom-Json
+  }
+  else {
+    $additional = $null
   }
   $show = Load-TvShowNfo -Folder $file.DirectoryName
   if ($null -eq $show) {
@@ -34,7 +41,14 @@ function Set-EpisodeNfo {
   }
   $season = Get-TvSeason -ShowId $showid -SeasonNumber $SeasonNumber
   $episodeNumber = [int]($file.BaseName -split " - ")[0].Remove(0, 4)
-  $episode = $season.episodes | Where-Object episode_number -eq $episodeNumber
+  if ($null -ne $additional) {
+    if (-not([String]::IsNullOrEmpty($additional.tmdb_episode_number))) {
+      $episode = $season.episodes | Where-Object episode_number -eq $additional.tmdb_episode_number
+    }
+  }
+  else {
+    $episode = $season.episodes | Where-Object episode_number -eq $episodeNumber
+  }
   if ($episode) {
     $directors = @()
     $directors += $episode.crew.Where( {$_.job -eq "Director" })
