@@ -25,7 +25,7 @@ function Set-EpisodeNfo {
   else {
     $additional = $null
   }
-  $show = Load-TvShowNfo -Folder $file.DirectoryName
+  $show = Import-TvShowNfo -Folder $file.DirectoryName
   if ($null -eq $show) {
     try {
       $show = (Get-Variable -Scope "Script" -Name $ShowName).Value
