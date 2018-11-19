@@ -31,7 +31,7 @@
     "Find-TvShow",
     "Get-TvSeason",
     "Initialize-TvShowRip",
-    "Load-TvShowNfo",
+    "Import-TvShowNfo",
     "New-SeasonEpisodeThumbnail",
     "New-SeasonFolder",
     "Set-EpisodeNfo",
