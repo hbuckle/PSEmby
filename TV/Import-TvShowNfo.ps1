@@ -1,4 +1,4 @@
-function Load-TvShowNfo {
+function Import-TvShowNfo {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
