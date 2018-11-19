@@ -6,6 +6,6 @@ function Update-FilmDescription {
   )
   $movie = [embymetadata.movie]::Load($PathToNfo)
   $description = Get-FilmDescription -Title $movie.title
-  $movie.plot = $description
+  $movie.plot = $description.review
   $movie.Save($PathToNfo)
 }

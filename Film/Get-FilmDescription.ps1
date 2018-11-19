@@ -4,37 +4,41 @@ function Get-FilmDescription {
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [string]$Title
   )
-  $baseuri = "https://www.radiotimes.com"
-  $uri = [System.Uri]::EscapeUriString("${baseuri}/search/programmes-films/?q=${Title}")
+  $filmuri = "https://www.radiotimes.com"
+  $searchterm = [System.Uri]::EscapeUriString("site:${filmuri}/film `"${Title}`"")
+  $searchuri = "https://api.cognitive.microsoft.com/bing/v7.0/search?q=${searchterm}"
+  $headers = @{"Ocp-Apim-Subscription-Key" = $Script:bing_api_key}
+  $search = @()
   try {
-    $search = @()
     $parser = [AngleSharp.Parser.Html.HtmlParser]::new()
-    $searchresult = Invoke-RestMethod $uri
-    $searchdocument = $parser.Parse($searchresult)
-    $links = $searchdocument.Links.Where({$_.PathName.StartsWith("/film/")})
+    $searchresult = Invoke-RestMethod $searchuri -Headers $headers
+    $links = @()
+    if ($null -ne (Get-Member -InputObject $searchresult -Name "webPages")) {
+      foreach ($page in $searchresult.webPages.value) {
+        $links += $page.url
+      }
+    }
     foreach ($link in $links) {
-      if ($link.PathName -ne "/film/") {
-        $reviewpage = Invoke-RestMethod "${baseuri}$($link.PathName)"
-        $reviewdocument = $parser.Parse($reviewpage)
-        foreach ($review in $reviewdocument.GetElementsByClassName("episode-extra__copy")) {
-          if (@($review.Attributes.Where({$_.Value -eq "reviewBody"})).Count -gt 0) {
-            $search += $review.TextContent.Trim()
-          }
+      $reviewpage = Invoke-RestMethod $link
+      $reviewdocument = $parser.Parse($reviewpage)
+      $object = @{}
+      $object["title"] = $reviewdocument.GetElementsByClassName("programme-header__heading  js-programme-page-header").TextContent.Trim()
+      foreach ($review in $reviewdocument.GetElementsByClassName("episode-extra__copy")) {
+        if (@($review.Attributes.Where({$_.Value -eq "reviewBody"})).Count -gt 0) {
+          $object["review"] = $review.TextContent.Trim()
+          $search += New-Object -TypeName "PSObject" -Property $object
         }
       }
     }
-    $result = @()
-    $result += $search | Select-Object -Unique
-    $selected = Select-ItemFromList -List $result
+    $selected = Select-ItemFromList -List $search -Properties @("title", "review")
     if ($null -eq $selected) {
-      return ""
+      return New-Object -TypeName "PSObject" -Property @{title = ""; review = ""}
     }
     else {
       return $selected
     }
   }
   catch {
-    Write-Warning "${baseuri}$($link.PathName)"
     Write-Warning $_.Exception.Message
   }
 }

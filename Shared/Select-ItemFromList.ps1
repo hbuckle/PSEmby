@@ -1,10 +1,12 @@
 function Select-ItemFromList {
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]
-    [Array]$List,
+    [Array]$List = @(),
     [Array]$Properties = @()
   )
+  if ($List.Count -eq 0) {
+    return $null
+  }
   $selector = @()
   $count = 1
   foreach ($item in $List) {

@@ -58,7 +58,8 @@ function Set-FilmNfo {
     $movie.actor += $movieActor
   }
   if ([string]::IsNullOrEmpty($movie.plot)) {
-    $movie.plot = Get-FilmDescription $film.Title
+    $description = Get-FilmDescription $film.Title
+    $movie.plot = $description.review
   }
   $movie.Save($output)
 }
