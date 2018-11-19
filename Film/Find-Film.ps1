@@ -4,7 +4,7 @@ function Find-Film {
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [string]$Title
   )
-  $client = [tmdbclient]::new($Script:api_key)
+  $client = [tmdbclient]::new($Script:tmdb_api_key)
   $search = $client.searchfilm($Title)
   $film = Select-ItemFromList -List $search -Properties @("title", "release_date", "overview")
   if ($null -eq $film) {

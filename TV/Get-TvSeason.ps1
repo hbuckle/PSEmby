@@ -6,6 +6,6 @@ function Get-TvSeason {
     [Parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]
     [int]$SeasonNumber
   )
-  $client = [tmdbclient]::new($Script:api_key)
+  $client = [tmdbclient]::new($Script:tmdb_api_key)
   return $client.gettvseason($ShowId, $SeasonNumber)
 }
