@@ -27,6 +27,7 @@
     "Get-VideoInfo",
     "Save-BRPlaylist",
     "Select-ItemFromList",
+    "Set-MkvChapterName",
     "Set-OggChapterName",
     "Convert-TvSeasonBr",
     "Find-TvShow",
