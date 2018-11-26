@@ -31,6 +31,7 @@
     "Set-OggChapterName",
     "Convert-TvSeasonBr",
     "Find-TvShow",
+    "Get-EpisodeDescriptionNetflix",
     "Get-TvSeason",
     "Initialize-TvShowRip",
     "Import-TvShowNfo",

@@ -8,7 +8,10 @@ function Set-EpisodeNfo {
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [int]$SeasonNumber,
     [string]$MetadataFolder = "\\CRUCIBLE\Metadata\metadata\People",
-    [switch]$RedownloadPersonImage
+    [switch]$RedownloadPersonImage,
+    [ValidateSet("Netflix")]
+    [string]$DescriptionSource,
+    [string]$DescriptionId
   )
   $file = Get-Item $PathToEpisode
   $output = $file.DirectoryName + "\" + $file.BaseName + ".nfo"
@@ -70,6 +73,13 @@ function Set-EpisodeNfo {
       }
       $episodeDirector.Value = $directorName
       $episodedetails.director += $episodeDirector
+    }
+    switch ($DescriptionSource) {
+      "Netflix" {
+        $description = Get-EpisodeDescriptionNetflix -Id $DescriptionId -SeasonNumber $SeasonNumber -EpisodeNumber $episodeNumber
+        $episodedetails.plot = $description
+      }
+      Default {}
     }
     $episodedetails.Save($output)
   }

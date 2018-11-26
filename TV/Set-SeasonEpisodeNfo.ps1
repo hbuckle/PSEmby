@@ -8,9 +8,22 @@ function Set-SeasonEpisodeNfo {
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [int]$SeasonNumber,
     [string]$MetadataFolder = "\\CRUCIBLE\Metadata\metadata\People",
-    [switch]$RedownloadPersonImage
+    [switch]$RedownloadPersonImage,
+    [ValidateSet("Netflix")]
+    [string]$DescriptionSource,
+    [string]$DescriptionId
   )
   Get-ChildItem -LiteralPath $SourceFolder -Filter "*.mkv" | ForEach-Object {
-    Set-EpisodeNfo -PathToEpisode $_.FullName -ShowName $ShowName -SeasonNumber $SeasonNumber -MetadataFolder $MetadataFolder -RedownloadPersonImage:$RedownloadPersonImage
+    $params = @{
+      PathToEpisode  = $_.FullName
+      ShowName       = $ShowName
+      SeasonNumber   = $SeasonNumber
+      MetadataFolder = $MetadataFolder
+    }
+    if ($null -ne $DescriptionSource) {
+      $params["DescriptionSource"] = $DescriptionSource
+      $params["DescriptionId"] = $DescriptionId
+    }
+    Set-EpisodeNfo @params -RedownloadPersonImage:$RedownloadPersonImage
   }
 }
