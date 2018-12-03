@@ -1,6 +1,7 @@
 function Select-ItemFromList {
   [CmdletBinding()]
   param (
+    [String]$Title = "",
     [Array]$List = @(),
     [Array]$Properties = @()
   )
@@ -23,6 +24,7 @@ function Select-ItemFromList {
     $selector += New-Object -TypeName PSObject -Property $obj
     $count++
   }
+  Write-Host $Title
   $selector | Format-Table -AutoSize -Wrap | Out-Host
   $choice = Read-Host "Number"
   $index = [int]$choice - 1
