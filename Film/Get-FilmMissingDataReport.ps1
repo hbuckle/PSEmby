@@ -11,7 +11,7 @@ function Get-FilmMissingDataReport {
         FileName  = ""
         Extension = ""
         Poster    = $false
-        Backdrop  = $false
+        Backdrop  = 0
         Logo      = $false
         Trailer   = $false
         NFO       = $false
@@ -32,7 +32,7 @@ function Get-FilmMissingDataReport {
       $props.FileName = $filmFile.BaseName
       $props.Extension = $filmFile.Extension
       $props.Poster = (Test-Path "$($_.FullName)\folder.jpg")
-      $props.Backdrop = (Test-Path "$($_.FullName)\backdrop.jpg")
+      $props.Backdrop = @(Get-ChildItem $_.FullName -Filter "backdrop*").Count
       $props.Logo = (Test-Path "$($_.FullName)\logo.png")
       $props.Trailer = (Test-Path "$($_.FullName)\Trailers\*.mkv")
       $props.NFO = (Test-Path "$($_.FullName)\*.nfo")
