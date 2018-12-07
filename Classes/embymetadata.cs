@@ -21,7 +21,13 @@ namespace embymetadata
     [XmlElementAttribute]
     public string role { get; set; }
     [XmlElementAttribute]
+    public string id { get; set; }
+    [XmlElementAttribute]
+    public string guid { get; set; }
+    [XmlElementAttribute]
     public string type { get; set; }
+    [XmlElementAttribute]
+    public string Tmdbid { get; set; }
     [XmlElementAttribute]
     public string thumb { get; set; }
   }

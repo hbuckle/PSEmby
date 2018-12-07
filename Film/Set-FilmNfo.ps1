@@ -44,7 +44,6 @@ function Set-FilmNfo {
   }
   foreach ($actor in $actors) {
     $movieActor = [embymetadata.actor]::new()
-    $actorName = "$($actor.name) ($($actor.id))"
     $imagepath = Get-PersonImagePath -MetadataFolder $MetadataFolder -PersonName $actor.name -PersonId $actor.id
     if (-not(Test-Path $imagepath) -or $RedownloadPersonImage) {
       Save-TmdbPersonImage -MetadataFolder $MetadataFolder -PersonName $actor.name -PersonId $actor.id -Overwrite
@@ -52,9 +51,10 @@ function Set-FilmNfo {
     if (Test-Path $imagepath) {
       $movieActor.thumb = $imagepath
     }
-    $movieActor.name = $actorName
+    $movieActor.name = $actor.name
     $movieActor.type = "Actor"
     $movieActor.role = $actor.character
+    $movieActor.Tmdbid = $actor.id
     $movie.actor += $movieActor
   }
   if ([string]::IsNullOrEmpty($movie.plot)) {
