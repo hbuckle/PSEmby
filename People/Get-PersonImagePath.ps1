@@ -12,6 +12,5 @@ function Get-PersonImagePath {
   $safeName = $PersonName.Replace('"', " ")
   $personFolder = "$safeName ($PersonId)"
   $outpath = Join-Path -Path $MetadataFolder -ChildPath "${sortfolder}\${personFolder}\poster.jpg"
-  Write-Verbose "Get-PersonImagePath : outpath = $outpath"
   return $outpath
 }
