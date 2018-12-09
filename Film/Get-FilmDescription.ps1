@@ -19,6 +19,9 @@ function Get-FilmDescription {
       }
     }
     foreach ($link in $links) {
+      if ($link -eq "https://www.radiotimes.com/film/") {
+        continue
+      }
       $reviewpage = Invoke-RestMethod $link
       $reviewdocument = $parser.Parse($reviewpage)
       $object = @{}
