@@ -21,7 +21,7 @@
     "Get-TmdbPerson",
     "Save-PersonImage",
     "Save-TmdbPersonImage",
-    "Set-DbPersonId",
+    "Set-DbPersonImagePath",
     "Export-BRSubs",
     "Export-ForcedSubs",
     "Get-DarAdjustment",
