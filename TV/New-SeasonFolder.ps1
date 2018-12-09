@@ -16,6 +16,8 @@ function New-SeasonFolder {
       $episode = @{
         "complete" = $false
         "mpls"     = ""
+        "vts"      = ""
+        "pgc"      = ""
       }
       $episode | ConvertTo-Json | Set-Content "$folder\episode.json" -Encoding Ascii
     }
