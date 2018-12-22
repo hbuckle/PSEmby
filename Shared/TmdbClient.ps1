@@ -14,7 +14,7 @@ class tmdbclient {
       $querystring = $querystring + "&$($this.api_key)"
     }
     $uri = "$($this.baseuri)${path}?${querystring}"
-    $result = Invoke-RestMethod -Method Get -Uri $uri
+    $result = Invoke-RestMethod -Method Get -Uri $uri | ConvertTo-Json -Depth 99 | ConvertFrom-Json -AsHashtable
     return $result
   }
   [Object] invokeapi([String] $path)

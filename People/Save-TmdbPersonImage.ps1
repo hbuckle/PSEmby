@@ -15,8 +15,8 @@ function Save-TmdbPersonImage {
   }
   if (-not(Test-Path $outfile) -or $Overwrite) {
     $person = Get-TmdbPerson -PersonId $PersonId
-    if ($null -ne $person.profile_path) {
-      $imageUrl = "https://image.tmdb.org/t/p/original$($person.profile_path)"
+    if ($null -ne $person["profile_path"]) {
+      $imageUrl = "https://image.tmdb.org/t/p/original$($person[`"profile_path`"])"
       Write-Verbose "Save-TmdbPersonImage : imageurl = $imageUrl"
       Write-Verbose "Save-TmdbPersonImage : outfile = $outfile"
       $client = [System.Net.WebClient]::new()

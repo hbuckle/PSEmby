@@ -9,7 +9,7 @@ function Set-FilmJson {
     [switch]$RedownloadPersonImage
   )
   $file = Get-Item $PathToFilm
-  Write-Verbose "Set-FilmNfo : PathToFilm = $PathToFilm"
+  Write-Verbose "Set-FilmJson : PathToFilm = $PathToFilm"
   $output = $file.DirectoryName + "\" + $file.BaseName + ".json"
   if (Test-Path $output) {
     $movie = Get-Content $output -Raw | ConvertFrom-Json -AsHashtable
@@ -26,30 +26,33 @@ function Set-FilmJson {
   else {
     $film = Get-Film -ID $movie["tmdbid"]
   }
-  $credits = Get-FilmCredits -ID $film.Id
+  $credits = Get-FilmCredits -ID $film["id"]
   $directors = @()
-  $directors += $credits.crew.Where({ $_.job -eq "Director" })
-  $actors = $credits.cast
-  $movie["title"] = (Get-TitleCaseString $film.title)
+  $directors += $credits["crew"].Where({ $_["job"] -eq "Director" })
+  $actors = $credits["cast"]
+  $movie["title"] = (Get-TitleCaseString $film["title"])
   $movie["originaltitle"] = ""
   $movie["tagline"] = ""
   $movie["customrating"] = ""
   $movie["originalaspectratio"] = ""
   $movie["sorttitle"] = $file.Directory.Name
-  $movie["year"] = ([datetime]$film.release_date).Year.ToString()
+  $movie["year"] = ([datetime]$film["release_date"]).Year
   $movie["imdb"] = ""
-  $movie["tmdbid"] = $film.id.ToString()
+  $movie["tmdbid"] = $film["id"].ToString()
   $movie["tmdbcollectionid"] = ""
   $movie["lockdata"] = $true
   $movie["genres"] = @()
   $movie["studios"] = @()
   $movie["tags"] = @()
   $movie["people"] = @()
+  foreach ($genre in $film["genres"]) {
+    $movie["genres"] += $genre["name"]
+  }
   foreach ($person in $directors) {
     $movieDirector = @{}
-    $imagepath = Get-PersonImagePath -MetadataFolder $MetadataFolder -PersonName $person.name -PersonId $person.id
+    $imagepath = Get-PersonImagePath -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"]
     if (-not(Test-Path $imagepath) -or $RedownloadPersonImage) {
-      Save-TmdbPersonImage -MetadataFolder $MetadataFolder -PersonName $person.name -PersonId $person.id -Overwrite
+      Save-TmdbPersonImage -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"] -Overwrite
     }
     if (Test-Path $imagepath) {
       $movieDirector["thumb"] = $imagepath
@@ -57,18 +60,24 @@ function Set-FilmJson {
     else {
       $movieDirector["thumb"] = ""
     }
-    $movieDirector["name"] = $person.name
+    $movieDirector["name"] = $person["name"]
     $movieDirector["type"] = "Director"
     $movieDirector["role"] = ""
-    $movieDirector["tmdbid"] = $person.id
-    $movieDirector["imdbid"] = $person.imdb_id
+    $movieDirector["tmdbid"] = $person["id"]
+    $tmdbperson = Get-TmdbPerson -PersonId $person["id"]
+    if ($null -ne $tmdbperson["imdb_id"]) {
+      $movieDirector["imdbid"] = $tmdbperson["imdb_id"]
+    }
+    else {
+      $movieDirector["imdbid"] = ""
+    }
     $movie["people"] += $movieDirector
   }
   foreach ($person in $actors) {
     $movieActor = @{}
-    $imagepath = Get-PersonImagePath -MetadataFolder $MetadataFolder -PersonName $person.name -PersonId $person.id
+    $imagepath = Get-PersonImagePath -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"]
     if (-not(Test-Path $imagepath) -or $RedownloadPersonImage) {
-      Save-TmdbPersonImage -MetadataFolder $MetadataFolder -PersonName $person.name -PersonId $person.id -Overwrite
+      Save-TmdbPersonImage -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"] -Overwrite
     }
     if (Test-Path $imagepath) {
       $movieActor["thumb"] = $imagepath
@@ -76,18 +85,24 @@ function Set-FilmJson {
     else {
       $movieActor["thumb"] = ""
     }
-    $movieActor["name"] = $person.name
+    $movieActor["name"] = $person["name"]
     $movieActor["type"] = "Actor"
-    $movieActor["role"] = $person.character
-    $movieActor["tmdbid"] = $person.id
-    $movieActor["imdbid"] = $person.imdb_id
+    $movieActor["role"] = $person["character"]
+    $movieActor["tmdbid"] = $person["id"]
+    $tmdbperson = Get-TmdbPerson -PersonId $person["id"]
+    if ($null -ne $tmdbperson["imdb_id"]) {
+      $movieActor["imdbid"] = $tmdbperson["imdb_id"]
+    }
+    else {
+      $movieActor["imdbid"] = ""
+    }
     $movie["people"] += $movieActor
   }
   if (-not([String]::IsNullOrEmpty($Description))) {
     $movie["overview"] = $Description
   }
   elseif ([string]::IsNullOrEmpty($movie["overview"])) {
-    $desc = Get-FilmDescription $film.Title
+    $desc = Get-FilmDescription $film["title"]
     $movie["overview"] = $desc.review
   }
   $movie | ConvertTo-Json -Depth 99 | Set-Content $output -Encoding utf8NoBOM

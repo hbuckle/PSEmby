@@ -46,30 +46,30 @@ function Set-EpisodeNfo {
   $episodeNumber = [int]($file.BaseName -split " - ")[0].Remove(0, 4)
   if ($null -ne $additional) {
     if (-not([String]::IsNullOrEmpty($additional.tmdb_episode_number))) {
-      $episode = $season.episodes | Where-Object episode_number -eq $additional.tmdb_episode_number
+      $episode = $season["episodes"] | Where-Object episode_number -eq $additional.tmdb_episode_number
     }
   }
   else {
-    $episode = $season.episodes | Where-Object episode_number -eq $episodeNumber
+    $episode = $season["episodes"] | Where-Object episode_number -eq $episodeNumber
   }
   if ($episode) {
     $directors = @()
-    $directors += $episode.crew.Where( {$_.job -eq "Director" })
-    $episodedetails.title = (Get-TitleCaseString $episode.name)
+    $directors += $episode["crew"].Where( {$_.job -eq "Director" })
+    $episodedetails.title = (Get-TitleCaseString $episode["name"])
     $episodedetails.lockdata = "true"
     $episodedetails.episode = $episodeNumber
     $episodedetails.season = $SeasonNumber
-    if ($null -ne $episode.air_date) {
-      $episodedetails.year = ([datetime]$episode.air_date).Year.ToString()
+    if ($null -ne $episode["air_date"]) {
+      $episodedetails.year = ([datetime]$episode["air_date"]).Year.ToString()
     }
     $episodedetails.director = @()
     $episodedetails.actor = @()
     foreach ($director in $directors) {
       $episodeDirector = [embymetadata.director]::new()
-      $directorName = "$($director.Name) ($($director.Id))"
-      $imagepath = Get-PersonImagePath -MetadataFolder $MetadataFolder -PersonName $director.name -PersonId $director.id
+      $directorName = "$($director[`"Name`"]) ($($director[`"Id`"]))"
+      $imagepath = Get-PersonImagePath -MetadataFolder $MetadataFolder -PersonName $director["name"] -PersonId $director["id"]
       if (-not(Test-Path $imagepath) -or $RedownloadPersonImage) {
-        Save-TmdbPersonImage -MetadataFolder $MetadataFolder -PersonName $director.name -PersonId $director.id -Overwrite
+        Save-TmdbPersonImage -MetadataFolder $MetadataFolder -PersonName $director["name"] -PersonId $director["id"] -Overwrite
       }
       $episodeDirector.Value = $directorName
       $episodedetails.director += $episodeDirector
