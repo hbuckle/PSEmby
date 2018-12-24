@@ -4,7 +4,9 @@ function Convert-TvSeasonDvd {
     [Parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]
     [string]$SourceFolder,
     [ValidateNotNullOrEmpty()]
-    [timespan]$MinimumLength = "00:15:00"
+    [timespan]$MinimumLength = "00:15:00",
+    [ValidateNotNullOrEmpty()]
+    [String]$Sar = "64:45"
   )
   $requiredpaths = @(
     "$SourceFolder\DISKS",
@@ -64,7 +66,7 @@ function Convert-TvSeasonDvd {
     if (-not(Test-Path "$folder\video.vpy")) {
       Read-Host "Create $folder\video.vpy"
     }
-    Convert-Video -SourceFolder $folder -X264Tune "film"
+    Convert-Video -SourceFolder $folder -X264Tune "film" -Sar $Sar
   }
 
   if (-not(Test-Path "$SourceFolder\mux.json")) {
