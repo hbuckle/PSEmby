@@ -1,4 +1,4 @@
-function Set-DbPersonImagePath {
+function Set-DbPersonPath {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]
@@ -41,11 +41,26 @@ function Set-DbPersonImagePath {
             "${personname} (${tmdbid})",
             "poster.jpg*${ticks}*Primary*0*0*null"
           ) -join "\" -replace "'", "''"
-          Write-Verbose "Set-DbPersonId : images = $images"
-          $updateimagequery = "UPDATE ${tablename} SET Images = '${images}' WHERE Id = '${id}'"
-          $updateimagecommand = [System.Data.SQLite.SQLiteCommand]::new($updateimagequery, $connection)
-          $number = $updateimagecommand.ExecuteNonQuery();
-          $updateimagecommand.Dispose()
+          if ($people["Images"] -ne $images) {
+            Write-Verbose "Set-DbPersonId : images = $images"
+            $updateimagequery = "UPDATE ${tablename} SET Images = '${images}' WHERE Id = '${id}'"
+            $updateimagecommand = [System.Data.SQLite.SQLiteCommand]::new($updateimagequery, $connection)
+            $number = $updateimagecommand.ExecuteNonQuery();
+            $updateimagecommand.Dispose()
+          }
+        }
+        $path = @(
+          "%MetadataPath%",
+          "People",
+          $personname[0],
+          "${personname} (${tmdbid})"
+        ) -join "\" -replace "'", "''"
+        if ($people["Path"] -ne $path) {
+          Write-Verbose "Set-DbPersonId : path = $path"
+          $updatepathquery = "UPDATE ${tablename} SET Path = '${path}' WHERE Id = '${id}'"
+          $updatepathcommand = [System.Data.SQLite.SQLiteCommand]::new($updatepathquery, $connection)
+          $number = $updatepathcommand.ExecuteNonQuery();
+          $updatepathcommand.Dispose()
         }
       }
     }
