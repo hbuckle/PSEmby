@@ -1,13 +1,14 @@
 @{
-  RootModule = 'PSEmby.psm1'
-  ModuleVersion = '2.0'
-  GUID = '7a62f737-f452-4bc9-a289-d15a51f611d8'
-  Author = 'HBuckle'
+  RootModule         = 'PSEmby.psm1'
+  ModuleVersion      = '2.0'
+  PowerShellVersion  = '6.0'
+  GUID               = '7a62f737-f452-4bc9-a289-d15a51f611d8'
+  Author             = 'HBuckle'
   RequiredAssemblies = @(
     '.\lib\AngleSharp.dll',
     '.\lib\System.Data.SQLite.dll'
   )
-  FunctionsToExport = @(
+  FunctionsToExport  = @(
     "Find-Film",
     "Get-Film",
     "Get-FilmCredits",
@@ -18,11 +19,14 @@
     "Set-FilmNfo",
     "Update-FilmDescription",
     "Get-People",
+    "Get-EmbyPeople",
+    "Get-EmbyPerson",
     "Get-PersonImagePath",
     "Get-TmdbPerson",
     "Save-PersonImage",
     "Save-TmdbPersonImage",
     "Set-DbPersonImagePath",
+    "Set-EmbyPerson",
     "Export-BRSubs",
     "Export-ForcedSubs",
     "Get-DarAdjustment",
