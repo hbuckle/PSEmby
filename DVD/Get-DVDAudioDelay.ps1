@@ -15,5 +15,5 @@ function Get-DVDAudioDelay {
   for ($j = 0; $j -lt $playlist.Audio.Count; $j++) {
     $playlist.Audio[$j].Delay = $delays[$j]
   }
-  $playlist | ConvertTo-Json | Set-Content $PathToPlaylist -Encoding Ascii
+  $playlist | ConvertTo-Json | Set-Content $PathToPlaylist -Encoding utf8NoBOM
 }

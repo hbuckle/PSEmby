@@ -47,8 +47,8 @@ function Convert-TvSeasonBr {
       } | Out-GridView -PassThru -Title $folder.Name
       if ($null -ne $playlist) {
         $episode.mpls = $playlist.Path
-        $episode | ConvertTo-Json | Set-Content "$folder\episode.json" -Encoding Ascii
-        $playlist | ConvertTo-Json | Set-Content "$folder\playlist.json" -Encoding Ascii
+        $episode | ConvertTo-Json | Set-Content "$folder\episode.json" -Encoding utf8NoBOM
+        $playlist | ConvertTo-Json | Set-Content "$folder\playlist.json" -Encoding utf8NoBOM
       }
     }
   }
@@ -92,7 +92,7 @@ function Convert-TvSeasonBr {
       [IO.File]::WriteAllLines("$folder\mux.json", ($episodemux | ConvertTo-Json -Depth 99), $encoding)
       & mkvmerge "@$folder\mux.json"
       $episode.complete = $true
-      $episode | ConvertTo-Json | Set-Content "$folder\episode.json" -Encoding Ascii
+      $episode | ConvertTo-Json | Set-Content "$folder\episode.json" -Encoding utf8NoBOM
     }
   }
 }

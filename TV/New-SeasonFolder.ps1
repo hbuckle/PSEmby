@@ -19,7 +19,7 @@ function New-SeasonFolder {
         "vts"      = ""
         "pgc"      = ""
       }
-      $episode | ConvertTo-Json | Set-Content "$folder\episode.json" -Encoding Ascii
+      $episode | ConvertTo-Json | Set-Content "$folder\episode.json" -Encoding utf8NoBOM
     }
   }
 }

@@ -11,7 +11,7 @@ function Save-DVDPlaylist {
     $outputvstrip = "$Path\$($_.Name).json"
     if (-not(Test-Path $outputvstrip)) {
       $playlist = Get-VStripPlaylist -PathToPlaylist $_.FullName
-      $playlist | ConvertTo-Json | Set-Content $outputvstrip -Encoding Ascii
+      $playlist | ConvertTo-Json | Set-Content $outputvstrip -Encoding utf8NoBOM
     }
   }
 }

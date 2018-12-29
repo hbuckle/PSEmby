@@ -31,7 +31,7 @@ function Initialize-TvShowRip {
     else {
       $show["sortname"] = $ShowName
     }
-    $show | ConvertTo-Json | Set-Content "$SourceFolder\show.json" -Encoding Ascii
+    $show | ConvertTo-Json | Set-Content "$SourceFolder\show.json" -Encoding utf8NoBOM
   }
 
   switch ($Region) {
@@ -48,8 +48,8 @@ function Initialize-TvShowRip {
       @{
         "number"       = $i
         "episodecount" = $episodecount
-        "seasonid"     = (Get-TvSeason -ShowId $TmdbId -SeasonNumber $i).Id
-      } | ConvertTo-Json | Set-Content "$seasonpath\season.json" -Encoding Ascii
+        "seasonid"     = (Get-TvSeason -ShowId $TmdbId -SeasonNumber $i)["Id"]
+      } | ConvertTo-Json | Set-Content "$seasonpath\season.json" -Encoding utf8NoBOM
       New-Item "$seasonpath\DISKS" -ItemType Directory | Out-Null
       New-SeasonFolder -SourceFolder $seasonpath -SeasonNumber $i -NumberOfEpisodes $episodecount
     }
