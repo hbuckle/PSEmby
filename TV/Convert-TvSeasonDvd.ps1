@@ -1,12 +1,12 @@
 function Convert-TvSeasonDvd {
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]
+    [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [string]$SourceFolder,
     [ValidateNotNullOrEmpty()]
     [timespan]$MinimumLength = "00:15:00",
-    [ValidateNotNullOrEmpty()]
-    [String]$Sar = "64:45"
+    [switch]$ConvertVideo,
+    [int[]]$AudioTracks = @(0)
   )
   $requiredpaths = @(
     "$SourceFolder\DISKS",
@@ -40,7 +40,7 @@ function Convert-TvSeasonDvd {
     $episode = Get-Content "$folder\episode.json" | ConvertFrom-Json
     if ([String]::IsNullOrEmpty($episode.vts)) {
       $playlist = $null
-      $playlist = Select-ItemFromList -Title $folder.Name -List $playlists -Properties @("Name", "Video", "Audio")
+      $playlist = Select-ItemFromList -Title $folder.Name -List $playlists -Properties @("Name", "Video", "PGC")
       if ($null -ne $playlist) {
         $episode.vts = $playlist.Path
         $pgc = $null
@@ -48,8 +48,8 @@ function Convert-TvSeasonDvd {
         if ($null -ne $pgc) {
           $episode.pgc = $pgc.Number
         }
-        $episode | ConvertTo-Json | Set-Content "$folder\episode.json" -Encoding Ascii
-        $playlist | ConvertTo-Json | Set-Content "$folder\playlist.json" -Encoding Ascii
+        $episode | ConvertTo-Json | Set-Content "$folder\episode.json" -Encoding utf8NoBOM
+        $playlist | ConvertTo-Json | Set-Content "$folder\playlist.json" -Encoding utf8NoBOM
       }
     }
   }
@@ -62,38 +62,45 @@ function Convert-TvSeasonDvd {
     }
   }
 
-  foreach ($folder in $episodestodo) {
-    if (-not(Test-Path "$folder\video.vpy")) {
-      Read-Host "Create $folder\video.vpy"
+  if ($ConvertVideo) {
+    foreach ($folder in $episodestodo) {
+      if (-not(Test-Path "$folder\video.vpy")) {
+        Read-Host "Create $folder\video.vpy"
+      }
+      $playlist = Get-Content "$folder\playlist.json" | ConvertFrom-Json
+      $sar = Get-Sar -Framesize $playlist.Video.Framesize -DAR $playlist.Video.AspectRatio
+      Convert-Video -SourceFolder $folder -X264Tune "film" -Sar $sar
     }
-    Convert-Video -SourceFolder $folder -X264Tune "film" -Sar $Sar
   }
 
-  if (-not(Test-Path "$SourceFolder\mux.json")) {
-    Read-Host "Create mux.json"
+  foreach ($folder in $episodestodo) {
+    $episode = Get-Content "$folder\episode.json" | ConvertFrom-Json
+    $playlist = Get-Content "$folder\playlist.json" | ConvertFrom-Json
+    $muxparams = @{
+      "Output"      = "$folder.mkv"
+      "Video"       = if ($ConvertVideo) { "$folder\video.h264" } else { "$folder\VideoFile.m2v" }
+      "AspectRatio" = $playlist.Video.AspectRatio
+      "FPS"         = switch ($playlist.Video.Format) {
+        "PAL" { "25p" }
+        "NTSC" { "24000/1001p" }
+        Default { throw "Unrecognised format" }
+      }
+      "Audio"       = @()
+      "Chapters"    = "$folder\chapters.txt"
+    }
+    for ($i = 0; $i -lt $playlist.Audio.Count; $i++) {
+      if ($AudioTracks.Contains($i)) {
+        $audio = [AudioTrack]::new()
+        $audio.Path = "$folder\AudioFile_8${i}.ac3"
+        $audio.Language = "eng"
+        $audio.Delay = $playlist.Audio[$i].Delay
+        $muxparams.Audio += $audio
+      }
+    }
+    $mux = Get-MkvToolnixOption @muxparams
+    $mux | Set-Content "$folder\mux.json" -Encoding utf8NoBOM
+    & mkvmerge "@$folder\mux.json"
+    $episode.complete = $true
+    $episode | ConvertTo-Json | Set-Content "$folder\episode.json" -Encoding utf8NoBOM
   }
-
-  # foreach ($folder in $episodestodo) {
-  #   $episode = Get-Content "$folder\episode.json" | ConvertFrom-Json
-  #   if (-not([String]::IsNullOrEmpty($episode.mpls))) {
-  #     $mux = Get-Content "$SourceFolder\mux.json" -Raw | ConvertFrom-Json
-  #     $outputindex = $mux.IndexOf("--output") + 1
-  #     $episodemux = $mux
-  #     $episodemux[$outputindex] = "$folder.mkv"
-  #     $mplsinput = $mux.Where({$_.Contains(".mpls")})
-  #     $mplsinputindex = -1
-  #     for ($i = 0; $i -lt $mux.Length; $i++) {
-  #       if ($mux[$i] -eq $mplsinput) {
-  #         $mplsinputindex = $i
-  #         break;
-  #       }
-  #     }
-  #     $episodemux[$mplsinputindex] = $episode.mpls
-  #     $encoding = [Text.UTF8Encoding]::new($false)
-  #     [IO.File]::WriteAllLines("$folder\mux.json", ($episodemux | ConvertTo-Json -Depth 99), $encoding)
-  #     & mkvmerge "@$folder\mux.json"
-  #     $episode.complete = $true
-  #     $episode | ConvertTo-Json | Set-Content "$folder\episode.json" -Encoding Ascii
-  #   }
-  # }
 }
