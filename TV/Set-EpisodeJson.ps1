@@ -35,11 +35,11 @@ function Set-EpisodeJson {
   $season = Get-TvSeason -ShowId $showid -SeasonNumber $SeasonNumber
   $episodeNumber = [int]($file.BaseName -split " - ")[0].Remove(0, 4)
   $episode = $season["episodes"] | Where-Object episode_number -eq $episodeNumber
-  $episodedetails["title"] = (Get-TitleCaseString $episode["title"])
+  $episodedetails["title"] = (Get-TitleCaseString $episode["name"])
   $episodedetails["sorttitle"] = ""
   $episodedetails["seasonnumber"] = $SeasonNumber
   $episodedetails["episodenumber"] = $episodeNumber
-  $episodedetails["communityrating"] = ""
+  $episodedetails["communityrating"] = $null
   # $episodedetails["releasedate"]
   $episodedetails["year"] = ([datetime]$episode["air_date"]).Year
   $episodedetails["parentalrating"] = $null
