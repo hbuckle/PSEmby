@@ -32,29 +32,33 @@ function Set-FilmNfo {
   $movie.lockdata = "true"
   $movie.director = @()
   $movie.actor = @()
-  foreach ($director in $directors) {
+  foreach ($person in $directors) {
     $movieDirector = [embymetadata.director]::new()
-    $directorName = "$($director.name) ($($director.id))"
-    $imagepath = Get-PersonImagePath -MetadataFolder $MetadataFolder -PersonName $director.name -PersonId $director.id
+    $imagepath = Get-PersonImagePath -MetadataFolder $MetadataFolder -PersonName $person.name -PersonId $person.id
     if (-not(Test-Path $imagepath) -or $RedownloadPersonImage) {
-      Save-TmdbPersonImage -MetadataFolder $MetadataFolder -PersonName $director.name -PersonId $director.id -Overwrite
+      Save-TmdbPersonImage -MetadataFolder $MetadataFolder -PersonName $person.name -PersonId $person.id -Overwrite
     }
-    $movieDirector.Value = $directorName
+    if (Test-Path $imagepath) {
+      $movieDirector.thumb = $imagepath
+    }
+    $movieDirector.name = $person.name
+    $movieDirector.type = "Director"
+    $movieDirector.Tmdbid = $person.id
     $movie.director += $movieDirector
   }
-  foreach ($actor in $actors) {
+  foreach ($person in $actors) {
     $movieActor = [embymetadata.actor]::new()
-    $imagepath = Get-PersonImagePath -MetadataFolder $MetadataFolder -PersonName $actor.name -PersonId $actor.id
+    $imagepath = Get-PersonImagePath -MetadataFolder $MetadataFolder -PersonName $person.name -PersonId $person.id
     if (-not(Test-Path $imagepath) -or $RedownloadPersonImage) {
-      Save-TmdbPersonImage -MetadataFolder $MetadataFolder -PersonName $actor.name -PersonId $actor.id -Overwrite
+      Save-TmdbPersonImage -MetadataFolder $MetadataFolder -PersonName $person.name -PersonId $person.id -Overwrite
     }
     if (Test-Path $imagepath) {
       $movieActor.thumb = $imagepath
     }
-    $movieActor.name = $actor.name
+    $movieActor.name = $person.name
     $movieActor.type = "Actor"
-    $movieActor.role = $actor.character
-    $movieActor.Tmdbid = $actor.id
+    $movieActor.role = $person.character
+    $movieActor.Tmdbid = $person.id
     $movie.actor += $movieActor
   }
   if ([string]::IsNullOrEmpty($movie.plot)) {

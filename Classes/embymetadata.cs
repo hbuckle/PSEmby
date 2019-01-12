@@ -9,8 +9,18 @@ namespace embymetadata
   [XmlTypeAttribute(AnonymousType = true)]
   public class director
   {
-    [XmlTextAttribute]
-    public string Value { get; set; }
+    [XmlElementAttribute]
+    public string name { get; set; }
+    [XmlElementAttribute]
+    public string id { get; set; }
+    [XmlElementAttribute]
+    public string guid { get; set; }
+    [XmlElementAttribute]
+    public string type { get; set; }
+    [XmlElementAttribute]
+    public string Tmdbid { get; set; }
+    [XmlElementAttribute]
+    public string thumb { get; set; }
   }
 
   [XmlTypeAttribute(AnonymousType = true)]
