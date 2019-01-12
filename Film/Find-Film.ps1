@@ -11,6 +11,7 @@ function Find-Film {
     throw "$Title not found"
   }
   else {
-    return $film
+    $full = Get-Film -ID $film["id"]
+    return $full
   }
 }
