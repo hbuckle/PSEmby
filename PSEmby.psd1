@@ -40,6 +40,7 @@
     'Get-TvSeason',
     'Get-VideoInfo',
     'Get-VStripPlaylist',
+    'Import-TvShowJson',
     'Import-TvShowNfo',
     'Initialize-TvShowRip',
     'New-SeasonEpisodeThumbnail',
@@ -58,8 +59,10 @@
     'Set-FilmNfo',
     'Set-MkvChapterName',
     'Set-OggChapterName',
+    'Set-SeasonEpisodeJson',
     'Set-SeasonEpisodeName',
     'Set-SeasonEpisodeNfo',
+    'Update-EmbyPeople',
     'Update-FilmDescription'
   )
 }

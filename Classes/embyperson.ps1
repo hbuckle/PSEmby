@@ -8,7 +8,11 @@ class EmbyPerson {
   [string]$Name
   [string]$ServerId
   [string]$Id
+  [datetime]$DateCreated
+  [string]$SortName
   [datetime]$PremiereDate
+  [string]$Path
+  [string]$Overview
   [string]$Type
   [EmbyImageTag]$ImageTags
   [EmbyImageTag[]]$BackdropImageTags
