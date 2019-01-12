@@ -4,10 +4,10 @@ function Set-EpisodeJson {
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [string]$PathToEpisode,
     [string]$ShowName,
-    [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [int]$SeasonNumber,
     [string]$MetadataFolder = "\\CRUCIBLE\Metadata\metadata\People",
-    [switch]$RedownloadPersonImage
+    [switch]$RedownloadPersonImage,
+    [switch]$ReleaseDate
   )
   $file = Get-Item $PathToEpisode
   Write-Verbose "Set-EpisodeJson : PathToEpisode = $PathToEpisode"
@@ -18,7 +18,7 @@ function Set-EpisodeJson {
   else {
     $episodedetails = @{}
   }
-  $show = Import-TvShowNfo -Folder $file.DirectoryName
+  $show = Import-TvShowJson -Folder $file.DirectoryName
   if ($null -eq $show) {
     try {
       $show = (Get-Variable -Scope "Script" -Name $ShowName).Value
@@ -27,10 +27,18 @@ function Set-EpisodeJson {
       $show = Find-TvShow -Title $ShowName
       New-Variable -Scope "Script" -Name $ShowName -Value $show
     }
-    $showid = $show.id
+    $showid = $show["id"]
   }
   else {
-    $showid = $show.tmdbid
+    $showid = $show["tmdbid"]
+  }
+  if ($SeasonNumber -eq 0) {
+    try {
+      $SeasonNumber = [int]$file.Directory.Name.Split(" ")[1]
+    }
+    catch {
+      throw "SeasonNumber not found"
+    }
   }
   $season = Get-TvSeason -ShowId $showid -SeasonNumber $SeasonNumber
   $episodeNumber = [int]($file.BaseName -split " - ")[0].Remove(0, 4)
@@ -40,12 +48,14 @@ function Set-EpisodeJson {
   $episodedetails["seasonnumber"] = $SeasonNumber
   $episodedetails["episodenumber"] = $episodeNumber
   $episodedetails["communityrating"] = $null
-  # $episodedetails["releasedate"]
+  if ($ReleaseDate) {
+    $episodedetails["releasedate"] = $episode["air_date"]
+  }
   $episodedetails["year"] = ([datetime]$episode["air_date"]).Year
   $episodedetails["parentalrating"] = $null
   $episodedetails["customrating"] = ""
   $episodedetails["originalaspectratio"] = ""
-  $episodedetails["imdb"] = ""
+  $episodedetails["imdbid"] = ""
   $episodedetails["tvdbid"] = ""
   $episodedetails["genres"] = @()
   $episodedetails["people"] = @()
