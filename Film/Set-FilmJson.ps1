@@ -13,6 +13,7 @@ function Set-FilmJson {
   $output = $file.DirectoryName + "\" + $file.BaseName + ".json"
   if (Test-Path $output) {
     $movie = Get-Content $output -Raw | ConvertFrom-Json -AsHashtable
+    $null = $movie.Remove("__type")
   }
   else {
     $movie = @{}
@@ -39,7 +40,12 @@ function Set-FilmJson {
   $movie["year"] = ([datetime]$film["release_date"]).Year
   $movie["imdb"] = ""
   $movie["tmdbid"] = $film["id"].ToString()
-  $movie["tmdbcollectionid"] = ""
+  if ($null -ne $film["belongs_to_collection"]) {
+    $movie["tmdbcollectionid"] = $film["belongs_to_collection"]["id"]
+  }
+  else {
+    $movie["tmdbcollectionid"] = ""
+  }
   $movie["lockdata"] = $true
   $movie["genres"] = @()
   $movie["studios"] = @()
