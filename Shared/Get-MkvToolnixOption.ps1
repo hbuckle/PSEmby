@@ -5,6 +5,14 @@ class AudioTrack {
   [string]$Delay
 }
 
+class Subtitle {
+  Subtitle() {}
+  [string]$Path
+  [string]$Language
+  [bool]$Default
+  [bool]$Forced
+}
+
 function Get-MkvToolnixOption {
   [CmdletBinding()]
   param (
@@ -13,6 +21,7 @@ function Get-MkvToolnixOption {
     [string]$AspectRatio,
     [string]$FPS,
     [AudioTrack[]]$Audio,
+    [Subtitle[]]$Subtitle = @(),
     [string]$Chapters
   )
   $options = @(
@@ -36,6 +45,21 @@ function Get-MkvToolnixOption {
       "0:$($track.Language)",
       "--sync",
       "0:$($track.Delay)",
+      "(",
+      $track.Path,
+      ")"
+    )
+  }
+  foreach ($track in $Subtitle) {
+    $default = if ($track.Default) { "yes" } else { "no" }
+    $forced = if ($track.Forced) { "yes" } else { "no" }
+    $options += @(
+      "--language",
+      "0:$($track.Language)",
+      "--default-track",
+      "0:${default}",
+      "--forced-track",
+      "0:${forced}",
       "(",
       $track.Path,
       ")"

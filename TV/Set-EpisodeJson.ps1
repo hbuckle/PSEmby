@@ -7,7 +7,10 @@ function Set-EpisodeJson {
     [int]$SeasonNumber,
     [string]$MetadataFolder = "\\CRUCIBLE\Metadata\metadata\People",
     [switch]$RedownloadPersonImage,
-    [switch]$ReleaseDate
+    [switch]$ReleaseDate,
+    [ValidateSet("Netflix")]
+    [string]$DescriptionSource,
+    [string]$DescriptionId
   )
   $file = Get-Item $PathToEpisode
   Write-Verbose "Set-EpisodeJson : PathToEpisode = $PathToEpisode"
@@ -48,6 +51,9 @@ function Set-EpisodeJson {
   $episodedetails["seasonnumber"] = $SeasonNumber
   $episodedetails["episodenumber"] = $episodeNumber
   $episodedetails["communityrating"] = $null
+  if ($null -eq $episodedetails["overview"]) {
+    $episodedetails["overview"] = ""
+  }
   if ($ReleaseDate) {
     $episodedetails["releasedate"] = $episode["air_date"]
   }
@@ -90,6 +96,12 @@ function Set-EpisodeJson {
     }
     $episodedetails["people"] += $episodeDirector
   }
-
+  switch ($DescriptionSource) {
+    "Netflix" {
+      $description = Get-EpisodeDescriptionNetflix -Id $DescriptionId -SeasonNumber $SeasonNumber -EpisodeNumber $episodeNumber
+      $episodedetails["overview"] = $description
+    }
+    Default {}
+  }
   $episodedetails | ConvertTo-Json -Depth 99 | Set-Content $output -Encoding utf8NoBOM
 }
