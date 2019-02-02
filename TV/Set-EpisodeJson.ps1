@@ -43,9 +43,9 @@ function Set-EpisodeJson {
       throw "SeasonNumber not found"
     }
   }
-  $season = Get-TvSeason -ShowId $showid -SeasonNumber $SeasonNumber
+  $show = Get-TvShow -ShowId $showid
   $episodeNumber = [int]($file.BaseName -split " - ")[0].Remove(0, 4)
-  $episode = $season["episodes"] | Where-Object episode_number -eq $episodeNumber
+  $episode = Get-TvEpisode -ShowId $showid -SeasonNumber $SeasonNumber -EpisodeNumber $episodeNumber
   $episodedetails["title"] = (Get-TitleCaseString $episode["name"])
   $episodedetails["sorttitle"] = ""
   $episodedetails["seasonnumber"] = $SeasonNumber
@@ -68,7 +68,9 @@ function Set-EpisodeJson {
   $episodedetails["studios"] = @()
   $episodedetails["tags"] = @()
   $episodedetails["lockdata"] = $true
-
+  foreach ($genre in $show["genres"]) {
+    $episodedetails["genres"] += $genre["name"]
+  }
   $directors = @()
   $directors += $episode["crew"].Where( {$_.job -eq "Director" })
   foreach ($person in $directors) {

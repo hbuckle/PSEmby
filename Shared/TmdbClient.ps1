@@ -31,9 +31,19 @@ class tmdbclient {
     $path = "/movie/${id}/credits"
     return $this.invokeapi($path)
   }
+  [Object] gettvshow([String] $id)
+  {
+    $path = "/tv/${id}"
+    return $this.invokeapi($path)
+  }
   [Object] gettvseason([String] $id, [String] $seasonnumber)
   {
     $path = "/tv/${id}/season/${seasonnumber}"
+    return $this.invokeapi($path)
+  }
+  [Object] gettvepisode([String] $id, [String] $seasonnumber, [String]$episodenumber)
+  {
+    $path = "/tv/${id}/season/${seasonnumber}/episode/${episodenumber}"
     return $this.invokeapi($path)
   }
   [Object] gettvepisodegroups([String] $id)
