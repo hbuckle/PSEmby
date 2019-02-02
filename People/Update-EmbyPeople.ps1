@@ -6,8 +6,13 @@ function Update-EmbyPeople {
     [ValidateNotNullOrEmpty()]
     [string]$ApiKey = $Script:emby_api_key
   )
+  Start-EmbyScheduledTask -Server $Server -ApiKey $ApiKey -TaskName "Set people paths" -WaitForCompletion
   $persons = Get-EmbyPeople -Server $Server -ApiKey $ApiKey
+  $count = 1
   foreach ($person in $persons) {
+    Write-Progress -Activity "Updating people" -CurrentOperation $person["Name"] -PercentComplete ($count/$persons.Count*100)
     $null = Invoke-WebRequest "${Server}/Users/${ApiKey}/Items/$($person.Id)?api_key=${ApiKey}"
+    $count++
   }
+  Write-Progress -Activity "Updating people" -Completed
 }

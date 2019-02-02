@@ -37,7 +37,9 @@
     'Get-Sar',
     'Get-TitleCaseString',
     'Get-TmdbPerson',
+    'Get-TvEpisode',
     'Get-TvSeason',
+    'Get-TvShow',
     'Get-VideoInfo',
     'Get-VStripPlaylist',
     'Import-TvShowJson',
@@ -62,6 +64,7 @@
     'Set-SeasonEpisodeJson',
     'Set-SeasonEpisodeName',
     'Set-SeasonEpisodeNfo',
+    'Start-EmbyScheduledTask',
     'Update-EmbyPeople',
     'Update-FilmDescription'
   )
