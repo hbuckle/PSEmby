@@ -6,5 +6,5 @@ function Export-ForcedSubs {
     [Parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]
     [string]$OutputFile
   )
-  & bdsup2sub --palette-mode create --forced-only --output $OutputFile $InputFile
+  & bdsup2sub --palette-mode create --forced-only --output $OutputFile $InputFile | Out-Null
 }

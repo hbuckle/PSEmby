@@ -4,5 +4,5 @@ function Get-VideoInfo {
     [Parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]
     [string]$Path
   )
-  & ffprobe -v quiet -print_format json -show_format -show_streams -show_chapters $Path | ConvertFrom-Json
+  & ffprobe -v quiet -print_format json -show_format -show_streams -show_chapters $Path | ConvertFrom-Json -AsHashtable
 }
