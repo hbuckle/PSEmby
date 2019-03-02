@@ -105,5 +105,8 @@ function Set-EpisodeJson {
     }
     Default {}
   }
+  if (-not($episodedetails.ContainsKey("userdata"))) {
+    $episodedetails["userdata"] = @()
+  }
   $episodedetails | ConvertTo-Json -Depth 99 | Set-Content $output -Encoding utf8NoBOM
 }

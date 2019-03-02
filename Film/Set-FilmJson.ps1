@@ -111,5 +111,8 @@ function Set-FilmJson {
     $desc = Get-FilmDescription $film["title"]
     $movie["overview"] = $desc.review
   }
+  if (-not($movie.ContainsKey("userdata"))) {
+    $movie["userdata"] = @()
+  }
   $movie | ConvertTo-Json -Depth 99 | Set-Content $output -Encoding utf8NoBOM
 }
