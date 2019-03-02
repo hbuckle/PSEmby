@@ -29,7 +29,7 @@ function Set-FilmJson {
   }
   $credits = Get-FilmCredits -ID $film["id"]
   $directors = @()
-  $directors += $credits["crew"].Where({ $_["job"] -eq "Director" })
+  $directors += $credits["crew"].Where( { $_["job"] -eq "Director" })
   $actors = $credits["cast"]
   $movie["title"] = (Get-TitleCaseString $film["title"])
   $movie["originaltitle"] = ""
@@ -113,6 +113,9 @@ function Set-FilmJson {
   }
   if (-not($movie.ContainsKey("userdata"))) {
     $movie["userdata"] = @()
+  }
+  if ([string]::IsNullOrEmpty($movie["parentalrating"])) {
+    $movie["parentalrating"] = Get-FilmRating -Title $movie["title"]
   }
   $movie | ConvertTo-Json -Depth 99 | Set-Content $output -Encoding utf8NoBOM
 }

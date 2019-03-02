@@ -1,12 +1,10 @@
 class tmdbclient {
   [String] $baseuri = "https://api.themoviedb.org/3"
   [String] $api_key
-  tmdbclient([String] $api_key)
-  {
+  tmdbclient([String] $api_key) {
     $this.api_key = "api_key=$api_key"
   }
-  [Object] invokeapi([String] $path, [String] $querystring)
-  {
+  [Object] invokeapi([String] $path, [String] $querystring) {
     if ([String]::IsNullOrEmpty($querystring)) {
       $querystring = $this.api_key
     }
@@ -17,55 +15,48 @@ class tmdbclient {
     $result = Invoke-RestMethod -Method Get -Uri $uri | ConvertTo-Json -Depth 99 | ConvertFrom-Json -AsHashtable
     return $result
   }
-  [Object] invokeapi([String] $path)
-  {
+  [Object] invokeapi([String] $path) {
     return $this.invokeapi($path, "")
   }
-  [Object] getfilm([String] $id)
-  {
+  [Object] getfilm([String] $id) {
     $path = "/movie/${id}"
     return $this.invokeapi($path)
   }
-  [Object] getfilmcredits([String] $id)
-  {
+  [Object] getfilmcredits([String] $id) {
     $path = "/movie/${id}/credits"
     return $this.invokeapi($path)
   }
-  [Object] gettvshow([String] $id)
-  {
+  [Object] getfilmreleasedates([String] $id) {
+    $path = "/movie/${id}/release_dates"
+    return $this.invokeapi($path)
+  }
+  [Object] gettvshow([String] $id) {
     $path = "/tv/${id}"
     return $this.invokeapi($path)
   }
-  [Object] gettvseason([String] $id, [String] $seasonnumber)
-  {
+  [Object] gettvseason([String] $id, [String] $seasonnumber) {
     $path = "/tv/${id}/season/${seasonnumber}"
     return $this.invokeapi($path)
   }
-  [Object] gettvepisode([String] $id, [String] $seasonnumber, [String]$episodenumber)
-  {
+  [Object] gettvepisode([String] $id, [String] $seasonnumber, [String]$episodenumber) {
     $path = "/tv/${id}/season/${seasonnumber}/episode/${episodenumber}"
     return $this.invokeapi($path)
   }
-  [Object] gettvepisodegroups([String] $id)
-  {
+  [Object] gettvepisodegroups([String] $id) {
     $path = "/tv/${id}/episode_groups"
     return $this.invokeapi($path)
   }
-  [Object] getperson([String] $id)
-  {
+  [Object] getperson([String] $id) {
     $path = "/person/${id}"
     return $this.invokeapi($path)
   }
-  [Object] searchfilm([String] $query)
-  {
+  [Object] searchfilm([String] $query) {
     return $this.search("movie", $query)
   }
-  [Object] searchtvshow([String] $query)
-  {
+  [Object] searchtvshow([String] $query) {
     return $this.search("tv", $query)
   }
-  [Object[]] search([String] $target, [String] $query)
-  {
+  [Object[]] search([String] $target, [String] $query) {
     $path = "/search/${target}"
     $querystring = "query=${query}"
     $response = $this.invokeapi($path, $querystring)
