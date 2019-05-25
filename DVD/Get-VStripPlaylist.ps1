@@ -12,7 +12,7 @@ function Get-VStripPlaylist {
     $playlist = @{
       "Path"  = $PathToPlaylist
       "Name"  = $file.Name
-      "Video" = @{}
+      "Video" = @{ }
       "Audio" = @()
       "PGC"   = @()
     }

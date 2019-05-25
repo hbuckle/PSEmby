@@ -23,7 +23,7 @@ function Set-FilmNfo {
   }
   $credits = Get-FilmCredits -ID $film.Id
   $directors = @()
-  $directors += $credits.crew.Where({$_.job -eq "Director" })
+  $directors += $credits.crew.Where( { $_.job -eq "Director" })
   $actors = $credits.cast
   $movie.title = (Get-TitleCaseString $film.title)
   $movie.sorttitle = $file.Directory.Name

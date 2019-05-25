@@ -7,7 +7,7 @@ function Get-FilmDescription {
   $filmuri = "https://www.radiotimes.com"
   $searchterm = [System.Uri]::EscapeUriString("site:${filmuri}/film `"${Title}`"")
   $searchuri = "https://api.cognitive.microsoft.com/bing/v7.0/search?q=${searchterm}"
-  $headers = @{"Ocp-Apim-Subscription-Key" = $Script:bing_api_key}
+  $headers = @{"Ocp-Apim-Subscription-Key" = $Script:bing_api_key }
   $search = @()
   try {
     $parser = [AngleSharp.Parser.Html.HtmlParser]::new()
@@ -24,10 +24,10 @@ function Get-FilmDescription {
       }
       $reviewpage = Invoke-RestMethod $link
       $reviewdocument = $parser.Parse($reviewpage)
-      $object = @{}
+      $object = @{ }
       $object["title"] = $reviewdocument.GetElementsByClassName("programme-header__heading  js-programme-page-header").TextContent.Trim()
       foreach ($review in $reviewdocument.GetElementsByClassName("episode-extra__copy")) {
-        if (@($review.Attributes.Where({$_.Value -eq "reviewBody"})).Count -gt 0) {
+        if (@($review.Attributes.Where( { $_.Value -eq "reviewBody" })).Count -gt 0) {
           $object["review"] = $review.TextContent.Trim()
           $search += New-Object -TypeName "PSObject" -Property $object
         }
@@ -35,7 +35,7 @@ function Get-FilmDescription {
     }
     $selected = Select-ItemFromList -List $search -Properties @("title", "review")
     if ($null -eq $selected) {
-      return New-Object -TypeName "PSObject" -Property @{title = ""; review = ""}
+      return New-Object -TypeName "PSObject" -Property @{title = ""; review = "" }
     }
     else {
       return $selected

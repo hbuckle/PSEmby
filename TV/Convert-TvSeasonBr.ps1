@@ -1,7 +1,7 @@
 function Convert-TvSeasonBr {
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]
+    [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [string]$SourceFolder,
     [ValidateNotNullOrEmpty()]
     [timespan]$MinimumLength = "00:15:00",
@@ -24,7 +24,8 @@ function Convert-TvSeasonBr {
   $playlists = $playlists | Where-Object {
     try {
       [timespan]$_.Length -gt $MinimumLength
-    } catch {
+    }
+    catch {
       $false
     }
   }

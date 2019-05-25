@@ -1,11 +1,11 @@
 function Save-TmdbPersonImage {
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]
+    [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [string]$MetadataFolder,
-    [Parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]
+    [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [string]$PersonName,
-    [Parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]
+    [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [string]$PersonId,
     [switch]$Overwrite
   )

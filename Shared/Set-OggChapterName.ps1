@@ -10,7 +10,7 @@ function Set-OggChapterName {
   $output = @()
   foreach ($line in $lines) {
     if ($line.Contains("NAME=")) {
-      $line = $line.Split("=")[0] +  "=Chapter ${count}"
+      $line = $line.Split("=")[0] + "=Chapter ${count}"
       $count++
     }
     $output += $line

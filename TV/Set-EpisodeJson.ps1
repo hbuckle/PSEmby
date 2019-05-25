@@ -19,7 +19,7 @@ function Set-EpisodeJson {
     $episodedetails = Get-Content $output -Raw | ConvertFrom-Json -AsHashtable
   }
   else {
-    $episodedetails = @{}
+    $episodedetails = @{ }
   }
   $show = Import-TvShowJson -Folder $file.DirectoryName
   if ($null -eq $show) {
@@ -72,9 +72,9 @@ function Set-EpisodeJson {
     $episodedetails["genres"] += $genre["name"]
   }
   $directors = @()
-  $directors += $episode["crew"].Where( {$_.job -eq "Director" })
+  $directors += $episode["crew"].Where( { $_.job -eq "Director" })
   foreach ($person in $directors) {
-    $episodeDirector = @{}
+    $episodeDirector = @{ }
     $imagepath = Get-PersonImagePath -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"]
     if (-not(Test-Path $imagepath) -or $RedownloadPersonImage) {
       Save-TmdbPersonImage -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"] -Overwrite
@@ -103,7 +103,7 @@ function Set-EpisodeJson {
       $description = Get-EpisodeDescriptionNetflix -Id $DescriptionId -SeasonNumber $SeasonNumber -EpisodeNumber $episodeNumber
       $episodedetails["overview"] = $description
     }
-    Default {}
+    Default { }
   }
   if (-not($episodedetails.ContainsKey("userdata"))) {
     $episodedetails["userdata"] = @()

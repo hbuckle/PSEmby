@@ -16,7 +16,7 @@ function Set-FilmJson {
     $null = $movie.Remove("__type")
   }
   else {
-    $movie = @{}
+    $movie = @{ }
   }
   if (-not([String]::IsNullOrEmpty($TmdbId))) {
     $film = Get-Film -ID $TmdbId
@@ -55,7 +55,7 @@ function Set-FilmJson {
     $movie["genres"] += $genre["name"]
   }
   foreach ($person in $directors) {
-    $movieDirector = @{}
+    $movieDirector = @{ }
     $imagepath = Get-PersonImagePath -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"]
     if (-not(Test-Path $imagepath) -or $RedownloadPersonImage) {
       Save-TmdbPersonImage -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"] -Overwrite
@@ -80,7 +80,7 @@ function Set-FilmJson {
     $movie["people"] += $movieDirector
   }
   foreach ($person in $actors) {
-    $movieActor = @{}
+    $movieActor = @{ }
     $imagepath = Get-PersonImagePath -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"]
     if (-not(Test-Path $imagepath) -or $RedownloadPersonImage) {
       Save-TmdbPersonImage -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"] -Overwrite

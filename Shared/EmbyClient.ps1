@@ -1,13 +1,11 @@
 class embyclient {
   [string] $baseuri
   [string] $api_key
-  embyclient([string] $baseuri, [string] $api_key)
-  {
+  embyclient([string] $baseuri, [string] $api_key) {
     $this.baseuri = $baseuri
     $this.api_key = "api_key=$api_key"
   }
-  [object] invokeapi([string] $path, [string] $querystring)
-  {
+  [object] invokeapi([string] $path, [string] $querystring) {
     $builder = [System.UriBuilder]::new($this.baseuri)
     $builder.Path = $path
     if ([String]::IsNullOrEmpty($querystring)) {
@@ -21,12 +19,10 @@ class embyclient {
     $result = Invoke-RestMethod -Method Get -Uri $uri | ConvertTo-Json -Depth 99 | ConvertFrom-Json -AsHashtable
     return $result
   }
-  [object] invokeapi([String] $path)
-  {
+  [object] invokeapi([String] $path) {
     return $this.invokeapi($path, "")
   }
-  [object] getitembyid([string] $id)
-  {
+  [object] getitembyid([string] $id) {
     return $this.invokeapi("Items/${id}")
   }
 }

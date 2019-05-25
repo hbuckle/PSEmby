@@ -1,7 +1,7 @@
 function Set-DbPersonPath {
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]
+    [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [String]$PathToDatabase,
     [string]$MetadataFolder = "\\CRUCIBLE\Metadata\metadata\People"
   )
@@ -22,12 +22,12 @@ function Set-DbPersonPath {
       $personname = $people["Name"]
       Write-Verbose "Set-DbPersonId : personname = $personname"
       $tmdbid = ""
-      $people["ProviderIds"].Split("|").Foreach({
-        if ($_ -match "Tmdb") {
-          $tmdbid = $_.Split("=")[1]
-          Write-Verbose "Set-DbPersonId : tmdbid = $tmdbid"
-        }
-      })
+      $people["ProviderIds"].Split("|").Foreach( {
+          if ($_ -match "Tmdb") {
+            $tmdbid = $_.Split("=")[1]
+            Write-Verbose "Set-DbPersonId : tmdbid = $tmdbid"
+          }
+        })
       if (-not([String]::IsNullOrEmpty($tmdbid))) {
         $imagepath = Get-PersonImagePath -MetadataFolder $MetadataFolder -PersonName $personname -PersonId $tmdbid
         if (Test-Path $imagepath) {

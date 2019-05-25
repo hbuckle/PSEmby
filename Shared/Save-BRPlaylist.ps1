@@ -1,7 +1,7 @@
 function Save-BRPlaylist {
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]
+    [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [string]$Path
   )
   if (-not(Test-Path "$Path\BDMV\PLAYLIST")) {

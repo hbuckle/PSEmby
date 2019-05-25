@@ -1,10 +1,10 @@
 class EmbyImageTag {
-  EmbyImageTag() {}
+  EmbyImageTag() { }
   [string]$Primary
 }
 
 class EmbyPerson {
-  EmbyPerson() {}
+  EmbyPerson() { }
   [string]$Name
   [string]$ServerId
   [string]$Id

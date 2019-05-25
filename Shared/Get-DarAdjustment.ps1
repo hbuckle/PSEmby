@@ -1,7 +1,7 @@
 function Get-DarAdjustment {
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]
+    [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [string]$PathToFile
   )
   $fileInfo = & ffprobe -v quiet -print_format json -show_format -show_streams $PathToFile | ConvertFrom-Json
@@ -15,14 +15,13 @@ function Get-DarAdjustment {
   Write-Verbose $dar
   Write-Verbose $width
 
-  if (-not($sar.Contains("1:1")))
-  {
-    $sarValues = $sar.Replace("sample_aspect_ratio=","").Split(":")
+  if (-not($sar.Contains("1:1"))) {
+    $sarValues = $sar.Replace("sample_aspect_ratio=", "").Split(":")
     $adjustment = ([int]$sarValues[0] / [int]$sarValues[1]) * $width
     [int]$adjustment = [Math]::Round(
-       ($adjustment / [double]16),
-       [System.MidpointRounding]::AwayFromZero
-     ) * 16
+      ($adjustment / [double]16),
+      [System.MidpointRounding]::AwayFromZero
+    ) * 16
 
     return $adjustment
   }

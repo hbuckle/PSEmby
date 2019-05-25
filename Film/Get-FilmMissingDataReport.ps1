@@ -57,8 +57,8 @@ function Get-FilmMissingDataReport {
         $props.Title = $movie["title"]
         $props.SortTitle = $movie["sorttitle"]
         $props.Plot = (-not([string]::IsNullOrEmpty($movie["overview"])))
-        $props.Director = (@($movie["people"] | Where-Object {$_["type"] -eq "Director"}).Count -gt 0)
-        $props.Actors = (@($movie["people"] | Where-Object {$_["type"] -eq "Actor"}).Count -gt 0)
+        $props.Director = (@($movie["people"] | Where-Object { $_["type"] -eq "Director" }).Count -gt 0)
+        $props.Actors = (@($movie["people"] | Where-Object { $_["type"] -eq "Actor" }).Count -gt 0)
         $props.Rating = $movie["parentalrating"]
       }
       if ($fileInfo["format"].ContainsKey("tags")) {

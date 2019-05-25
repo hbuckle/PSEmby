@@ -1,12 +1,12 @@
 class AudioTrack {
-  AudioTrack() {}
+  AudioTrack() { }
   [string]$Path
   [string]$Language
   [string]$Delay
 }
 
 class Subtitle {
-  Subtitle() {}
+  Subtitle() { }
   [string]$Path
   [string]$Language
   [bool]$Default

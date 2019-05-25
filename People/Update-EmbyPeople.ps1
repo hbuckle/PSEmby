@@ -10,7 +10,7 @@ function Update-EmbyPeople {
   $persons = Get-EmbyPeople -Server $Server -ApiKey $ApiKey
   $count = 1
   foreach ($person in $persons) {
-    Write-Progress -Activity "Updating people" -CurrentOperation $person["Name"] -PercentComplete ($count/$persons.Count*100)
+    Write-Progress -Activity "Updating people" -CurrentOperation $person["Name"] -PercentComplete ($count / $persons.Count * 100)
     $null = Invoke-WebRequest "${Server}/Users/${ApiKey}/Items/$($person.Id)?api_key=${ApiKey}"
     $count++
   }

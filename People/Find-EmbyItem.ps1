@@ -12,6 +12,6 @@ function Find-EmbyItem {
   $builder.Path = "Users/${ApiKey}/Items"
   $builder.Query = "api_key=$ApiKey&NameStartsWith=${Name}&Recursive=true&Fields=People,Genres"
   $response = Invoke-RestMethod $builder.ToString() -Method "Get" -ContentType "application/json" |
-    ConvertTo-Json | ConvertFrom-Json -AsHashtable
+  ConvertTo-Json | ConvertFrom-Json -AsHashtable
   return $response["Items"]
 }

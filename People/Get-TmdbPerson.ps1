@@ -1,7 +1,7 @@
 function Get-TmdbPerson {
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]
+    [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [string]$PersonId
   )
   $client = [tmdbclient]::new($Script:tmdb_api_key)

@@ -4,7 +4,7 @@ function Get-FilmRating {
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [string]$Title
   )
-  $uribuilder = [System.UriBuilder]::new("https://www.bbfc.co.uk")
+  $uribuilder = [System.UriBuilder]::new("https://bbfc.co.uk")
   $searchpath = [System.Uri]::EscapeUriString($Title)
   $uribuilder.Path = "/search/releases/$searchpath"
   $mapping = @{

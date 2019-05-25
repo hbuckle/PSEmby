@@ -11,7 +11,7 @@ function Select-ItemFromList {
   $selector = @()
   $count = 1
   foreach ($item in $List) {
-    $obj = [Ordered]@{}
+    $obj = [Ordered]@{ }
     $obj["number"] = $count
     if ($Properties.Count -gt 0) {
       foreach ($prop in $Properties) {

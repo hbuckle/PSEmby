@@ -1,7 +1,7 @@
 function Find-TvShow {
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]
+    [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [string]$Title
   )
   $client = [tmdbclient]::new($Script:tmdb_api_key)
@@ -9,7 +9,8 @@ function Find-TvShow {
   $show = Select-ItemFromList -List $search -Properties @("name", "overview")
   if ($null -eq $show) {
     throw "$Title not found"
-  } else {
+  }
+  else {
     return $show
   }
 }

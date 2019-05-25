@@ -1,7 +1,7 @@
 function Save-DVDPlaylist {
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]
+    [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [string]$Path
   )
   if (-not(Test-Path "$Path\VIDEO_TS")) {

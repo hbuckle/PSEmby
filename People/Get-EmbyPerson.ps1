@@ -12,5 +12,5 @@ function Get-EmbyPerson {
   $builder.Path = "Users/${ApiKey}/Items/${Id}"
   $builder.Query = "api_key=$ApiKey"
   Invoke-RestMethod $builder.ToString() -Method "Get" -ContentType "application/json" |
-    ConvertTo-Json | ConvertFrom-Json -AsHashtable
+  ConvertTo-Json | ConvertFrom-Json -AsHashtable
 }

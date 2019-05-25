@@ -37,7 +37,7 @@ function Initialize-TvShowRip {
   switch ($Region) {
     "UK" { $subfolder = "Series" }
     "US" { $subfolder = "Season" }
-    Default {}
+    Default { }
   }
   for ($i = 1; $i -le $Seasons; $i++) {
     $number = $i.ToString().PadLeft(2, "0")

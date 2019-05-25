@@ -20,9 +20,9 @@ function Get-EpisodeDescriptionNetflix {
   }
   # $seasons = $parsed.GetElementsByClassName("kitchen-sink-grid-wrapper")
   $match = "Episode ${EpisodeNumber} of Season ${SeasonNumber}"
-  $img = $parsed.GetElementsByClassName("title-episode-img").Where({
-    $_.AlternativeText -match $match
-  })
+  $img = $parsed.GetElementsByClassName("title-episode-img").Where( {
+      $_.AlternativeText -match $match
+    })
   if ($null -ne $img) {
     return $img.Parent.Parent.Parent.ChildNodes[1].TextContent
   }

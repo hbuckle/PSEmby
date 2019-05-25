@@ -54,7 +54,7 @@ function Set-EpisodeNfo {
   }
   if ($episode) {
     $directors = @()
-    $directors += $episode["crew"].Where( {$_.job -eq "Director" })
+    $directors += $episode["crew"].Where( { $_.job -eq "Director" })
     $episodedetails.title = (Get-TitleCaseString $episode["name"])
     $episodedetails.lockdata = "true"
     $episodedetails.episode = $episodeNumber
@@ -79,7 +79,7 @@ function Set-EpisodeNfo {
         $description = Get-EpisodeDescriptionNetflix -Id $DescriptionId -SeasonNumber $SeasonNumber -EpisodeNumber $episodeNumber
         $episodedetails.plot = $description
       }
-      Default {}
+      Default { }
     }
     $episodedetails.Save($output)
   }
