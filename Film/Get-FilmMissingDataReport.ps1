@@ -28,6 +28,8 @@ function Get-FilmMissingDataReport {
         Director         = $false
         Actors           = $false
         Rating           = ""
+        TmdbId           = ""
+        TmdbCollectionId = ""
         Container        = ""
       }
       $filmFile = Get-Item "$($_.FullName)\*.mkv"
@@ -60,6 +62,8 @@ function Get-FilmMissingDataReport {
         $props.Director = (@($movie["people"] | Where-Object { $_["type"] -eq "Director" }).Count -gt 0)
         $props.Actors = (@($movie["people"] | Where-Object { $_["type"] -eq "Actor" }).Count -gt 0)
         $props.Rating = $movie["parentalrating"]
+        $props.TmdbId = $movie["tmdbid"]
+        $props.TmdbCollectionId = $movie["tmdbcollectionid"]
       }
       if ($fileInfo["format"].ContainsKey("tags")) {
         $props.Container = $fileInfo["format"]["tags"]["encoder"]
