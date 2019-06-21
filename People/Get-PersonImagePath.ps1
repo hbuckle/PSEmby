@@ -8,8 +8,11 @@ function Get-PersonImagePath {
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [string]$PersonId
   )
-  $sortfolder = $PersonName[0]
-  $safeName = $PersonName.Replace('"', " ")
+  $safeName = $PersonName
+  [System.IO.Path]::GetInvalidFileNameChars() | ForEach-Object {
+    $safeName = $safeName.Replace($_.ToString(), "")
+  }
+  $sortfolder = $safeName[0]
   $personFolder = "$safeName ($PersonId)"
   $outpath = Join-Path -Path $MetadataFolder -ChildPath "${sortfolder}\${personFolder}\poster.jpg"
   return $outpath
