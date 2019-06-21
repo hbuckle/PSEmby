@@ -13,6 +13,15 @@ function Save-TmdbPersonImage {
   if (-not(Test-Path (Split-Path $outfile))) {
     $null = New-Item -ItemType Directory -Path (Split-Path $outfile)
   }
+  $personjsonpath = Join-Path (Split-Path $outfile -Parent) "person.json"
+  if (Test-Path $personjsonpath) {
+    $personjson = Get-Content $personjsonpath -Raw | ConvertFrom-Json -Depth 99 -AsHashtable
+  }
+  else {
+    $personjson = @{ }
+  }
+  $personjson["tmdbid"] = $PersonId
+  $personjson["lockdata"] = $true
   if (-not(Test-Path $outfile) -or $Overwrite) {
     $person = Get-TmdbPerson -PersonId $PersonId
     if ($null -ne $person["profile_path"]) {
@@ -24,4 +33,17 @@ function Save-TmdbPersonImage {
       $client.Dispose()
     }
   }
+  if (Test-Path $outfile) {
+    $personjson["images"] = @(
+      @{
+        id   = 0
+        path = $outfile
+        type = "Primary"
+      }
+    )
+  }
+  else {
+    $personjson["images"] = @()
+  }
+  $personjson | ConvertTo-Json -Depth 99 | Set-Content $personjsonpath -Encoding utf8NoBOM
 }
