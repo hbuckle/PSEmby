@@ -51,6 +51,7 @@
     'Invoke-SqliteQuery',
     'New-SeasonEpisodeThumbnail',
     'New-SeasonFolder',
+    'Remove-MissingPeople',
     'Save-BRPlaylist',
     'Save-ChapterImage',
     'Save-DVDPlaylist',
@@ -72,6 +73,7 @@
     'Set-SeasonEpisodeNfo',
     'Start-EmbyScheduledTask',
     'Update-EmbyPeople',
-    'Update-FilmDescription'
+    'Update-FilmDescription',
+    'Update-FilmJson'
   )
 }
