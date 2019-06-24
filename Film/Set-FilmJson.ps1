@@ -35,7 +35,6 @@ function Set-FilmJson {
   $movie["originaltitle"] = ""
   $movie["tagline"] = ""
   $movie["customrating"] = ""
-  $movie["originalaspectratio"] = ""
   $movie["sorttitle"] = $file.Directory.Name
   $movie["year"] = ([datetime]$film["release_date"]).Year
   $movie["imdb"] = ""
