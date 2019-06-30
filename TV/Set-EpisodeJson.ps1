@@ -60,7 +60,6 @@ function Set-EpisodeJson {
   $episodedetails["year"] = ([datetime]$episode["air_date"]).Year
   $episodedetails["parentalrating"] = $null
   $episodedetails["customrating"] = ""
-  $episodedetails["originalaspectratio"] = ""
   $episodedetails["imdbid"] = ""
   $episodedetails["tvdbid"] = ""
   $episodedetails["genres"] = @()
