@@ -18,6 +18,7 @@ function New-SeasonFolder {
         "mpls"     = ""
         "vts"      = ""
         "pgc"      = ""
+        "subs"     = $false
       }
       $episode | ConvertTo-Json | Set-Content "$folder\episode.json" -Encoding utf8NoBOM
     }

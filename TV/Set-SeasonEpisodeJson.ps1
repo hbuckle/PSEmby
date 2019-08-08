@@ -4,7 +4,7 @@ function Set-SeasonEpisodeJson {
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [string]$SourceFolder,
     [string]$ShowName,
-    [int]$SeasonNumber,
+    [int]$SeasonNumber = 99,
     [string]$MetadataFolder = "\\CRUCIBLE\Metadata\metadata\People",
     [switch]$RedownloadPersonImage,
     [switch]$ReleaseDate
@@ -18,4 +18,18 @@ function Set-SeasonEpisodeJson {
     }
     Set-EpisodeJson @params -RedownloadPersonImage:$RedownloadPersonImage -ReleaseDate:$ReleaseDate
   }
+  $output = Join-Path $SourceFolder "season.json"
+  if (Test-Path $output) {
+    $season = Get-Content $output | ConvertFrom-Json -AsHashtable
+  }
+  else {
+    $season = @{ }
+  }
+  $episode1 = Get-ChildItem -LiteralPath $SourceFolder -Filter "*.json" |
+  Select-Object -First 1 | Get-Content -Raw | ConvertFrom-Json -AsHashtable
+  $season["lockdata"] = $true
+  $season["releasedate"] = $episode1["releasedate"]
+  $season["genres"] = $episode1["genres"]
+  $season["year"] = $episode1["year"]
+  $season | ConvertTo-Json -Depth 99 | Set-Content $output -Encoding utf8NoBOM
 }

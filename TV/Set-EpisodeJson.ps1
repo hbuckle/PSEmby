@@ -4,7 +4,7 @@ function Set-EpisodeJson {
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [string]$PathToEpisode,
     [string]$ShowName,
-    [int]$SeasonNumber,
+    [int]$SeasonNumber = 99,
     [string]$MetadataFolder = "\\CRUCIBLE\Metadata\metadata\People",
     [switch]$RedownloadPersonImage,
     [switch]$ReleaseDate,
@@ -35,7 +35,7 @@ function Set-EpisodeJson {
   else {
     $showid = $show["tmdbid"]
   }
-  if ($SeasonNumber -eq 0) {
+  if ($SeasonNumber -eq 99) {
     try {
       $SeasonNumber = [int]$file.Directory.Name.Split(" ")[1]
     }

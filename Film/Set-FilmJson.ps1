@@ -37,7 +37,7 @@ function Set-FilmJson {
   $movie["customrating"] = ""
   $movie["sorttitle"] = $file.Directory.Name
   $movie["year"] = ([datetime]$film["release_date"]).Year
-  $movie["imdb"] = ""
+  $movie["imdbid"] = ""
   $movie["tmdbid"] = $film["id"].ToString()
   if ($null -ne $film["belongs_to_collection"]) {
     $movie["tmdbcollectionid"] = $film["belongs_to_collection"]["id"]
