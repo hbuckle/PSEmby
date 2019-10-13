@@ -33,13 +33,13 @@ function Export-BRSubs {
       }
     }
     ".mkv" {
-      $info = & mkvextract -J $InputFile | ConvertFrom-Json -AsHashtable
+      $info = & mkvmerge -J $InputFile | ConvertFrom-Json -AsHashtable
       $subs = @()
       $subs += $info["tracks"] | Where-Object codec -eq "HDMV PGS"
       foreach ($sub in $subs) {
         $output = "$OutputFolder\$($item.BaseName)-$($sub['id']).sup"
         $output_forced = "$OutputFolder\$($item.BaseName)-$($sub['id'])_forced.sup"
-        & mkvextract tracks $InputFile $($sub["id"]):${output}
+        & mkvextract tracks $InputFile "$($sub['id']):${output}"
         if (-not(Test-Path $output_forced)) {
           Export-ForcedSubs -InputFile $output -OutputFile $output_forced
         }

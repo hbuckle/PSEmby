@@ -57,38 +57,29 @@ function Convert-TvSeasonBr {
   }
 
   foreach ($folder in $episodestodo) {
-    if (Test-Path "$folder\playlist.json") {
-      $playlist = Get-Content "$folder\playlist.json" | ConvertFrom-Json
-      Export-BRSubs -PathToPlaylist $playlist.Path -OutputFolder $folder
-      # $playlist = Get-Content "$folder\playlist.json" | ConvertFrom-Json
-      # $subs = @()
-      # $subs += $playlist.Tracks | Where-Object { $_.Contains("Subtitle (PGS), English") }
-      # foreach ($sub in $subs) {
-      #   $trackid = $sub.Split(":")[0]
-      #   if (-not(Test-Path "$folder\$trackid.sup")) {
-      #     & eac3to $playlist.Path 1`) ${trackid}`: "$folder\$trackid.sup"
-      #     Export-ForcedSubs -InputFile "$folder\$trackid.sup" -OutputFile "$folder\${trackid}_forced.sup"
-      #   }
-      # }
+    $episode = Get-Content "$folder\episode.json" | ConvertFrom-Json
+    if (-not($episode.subs)) {
+      if (Test-Path "$folder\playlist.json") {
+        $playlist = Get-Content "$folder\playlist.json" | ConvertFrom-Json
+        Export-BRSubs -InputFile $playlist.Path -OutputFolder $folder
+        $episode.subs = $true
+        $episode | ConvertTo-Json | Set-Content "$folder\episode.json" -Encoding utf8NoBOM
+      }
     }
   }
 
-  # if (-not(Test-Path "$SourceFolder\mux.json")) {
-  #   Read-Host "Create mux.json"
-  # }
+  if (-not(Test-Path "$SourceFolder\mux.json")) {
+    Read-Host "Create mux.json"
+  }
 
-  # foreach ($folder in $episodestodo) {
-  #   $episode = Get-Content "$folder\episode.json" | ConvertFrom-Json
-  #   $playlist = Get-Content "$folder\playlist.json" | ConvertFrom-Json
-  #   Set-OggChapterName -InputFile "$folder\chapters.txt"
-  #   $muxparams = @{
-  #     "Output"      = "$folder.mkv"
-  #     "Video"       = "$folder\video.h264"
-  #     "AspectRatio" = "16/9"
-  #     "FPS"         = "24000/1001p"
-  #     "Audio"       = @()
-  #     "Subtitle"    = @()
-  #     "Chapters"    = "$folder\chapters.txt"
-  #   }
-  # }
+  foreach ($folder in $episodestodo) {
+    $episode = Get-Content "$folder\episode.json" | ConvertFrom-Json
+    $mux = Get-Content "$SourceFolder\mux.json" -Raw | ConvertFrom-Json -AsHashtable
+    $indexout = $mux.IndexOf("OUTPUT")
+    $indexin = $mux.IndexOf("INPUT")
+    $mux[$indexout] = "$folder.mkv"
+    $mux[$indexin] = $episode.mpls
+    $mux | ConvertTo-Json | Set-Content "$folder\mux.json" -Encoding utf8NoBOM
+    & mkvmerge "@$folder\mux.json"
+  }
 }
