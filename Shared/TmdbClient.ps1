@@ -12,7 +12,7 @@ class tmdbclient {
       $querystring = $querystring + "&$($this.api_key)"
     }
     $uri = "$($this.baseuri)${path}?${querystring}"
-    $result = Invoke-RestMethod -Method Get -Uri $uri | ConvertTo-Json -Depth 99 | ConvertFrom-Json -AsHashtable
+    $result = Invoke-RestMethod -Method Get -Uri $uri | ConvertTo-Json -Depth 99 | ConvertFrom-Json -AsHashtable -Depth 99
     return $result
   }
   [Object] invokeapi([String] $path) {
@@ -44,6 +44,10 @@ class tmdbclient {
   }
   [Object] gettvepisodegroups([String] $id) {
     $path = "/tv/${id}/episode_groups"
+    return $this.invokeapi($path)
+  }
+  [Object] gettvepisodegroup([String] $id) {
+    $path = "/tv/episode_group/${id}"
     return $this.invokeapi($path)
   }
   [Object] getperson([String] $id) {
