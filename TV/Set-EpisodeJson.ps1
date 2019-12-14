@@ -44,8 +44,18 @@ function Set-EpisodeJson {
     }
   }
   $show = Get-TvShow -ShowId $showid
+  $episodeId = ($file.BaseName -split " - ")[0]
   $episodeNumber = [int]($file.BaseName -split " - ")[0].Remove(0, 4)
-  $episode = Get-TvEpisode -ShowId $showid -SeasonNumber $SeasonNumber -EpisodeNumber $episodeNumber
+  if (Test-Path (Join-Path $file.DirectoryName "tmdb.json")) {
+    $tmdb = Get-Content (Join-Path $file.DirectoryName "tmdb.json") | ConvertFrom-Json -AsHashtable -Depth 99
+    $season = Get-TvSeason -EpisodeGroupId $tmdb["episodegroupid"] -SeasonId $tmdb["seasonid"]
+    $episode = $season["episodes"] | Where-Object order -eq ($episodeNumber - 1)
+    $episode = Get-TvEpisode -ShowId $showid -SeasonNumber $episode["season_number"] -EpisodeNumber $episode["episode_number"]
+  }
+  else {
+    $tmdb = @{overrides = @{ } }
+    $episode = Get-TvEpisode -ShowId $showid -SeasonNumber $SeasonNumber -EpisodeNumber $episodeNumber
+  }
   $episodedetails["title"] = (Get-TitleCaseString $episode["name"])
   $episodedetails["sorttitle"] = ""
   $episodedetails["seasonnumber"] = $SeasonNumber
@@ -106,6 +116,11 @@ function Set-EpisodeJson {
   }
   if (-not($episodedetails.ContainsKey("userdata"))) {
     $episodedetails["userdata"] = @()
+  }
+  if ($null -ne $tmdb["overrides"][$episodeId]) {
+    foreach ($property in $tmdb["overrides"][$episodeId].GetEnumerator()) {
+      $episodedetails[$property.Key] = $property.Value
+    }
   }
   $episodedetails | ConvertTo-Json -Depth 99 | Set-Content $output -Encoding utf8NoBOM
 }
