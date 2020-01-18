@@ -12,6 +12,8 @@
     '.\lib\System.Data.SQLite.dll'
   )
   FunctionsToExport  = @(
+    'ConvertFrom-JsonSerialize',
+    'ConvertTo-JsonSerialize',
     'Convert-TvSeasonBr',
     'Convert-TvSeasonDvd',
     'Convert-Video',
@@ -29,6 +31,7 @@
     'Get-EmbyPeople',
     'Get-EmbyPerson',
     'Get-EpisodeDescriptionNetflix',
+    'Get-FileSafeName',
     'Get-Film',
     'Get-FilmCredits',
     'Get-FilmDescription',
@@ -51,10 +54,13 @@
     'Invoke-SqliteQuery',
     'New-SeasonEpisodeThumbnail',
     'New-SeasonFolder',
+    'Optimize-JPEG',
+    'Read-FilmJson',
     'Remove-MissingPeople',
     'Save-BRPlaylist',
     'Save-ChapterImage',
     'Save-DVDPlaylist',
+    'Save-FilmJson',
     'Save-PersonImage',
     'Save-SeasonChapterImage',
     'Save-TmdbPersonImage',
