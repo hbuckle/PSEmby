@@ -3,13 +3,19 @@ Set-StrictMode -Version Latest
 if (-not(Test-Path "$PSScriptRoot\paths.json")) {
   throw "paths.json not present"
 }
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
 Get-ChildItem $PSScriptRoot -Recurse -Include "*.ps1" | ForEach-Object {
   . $($_.FullName)
 }
-Get-ChildItem "$PSScriptRoot\Classes" -Recurse -Include "*.cs" | ForEach-Object {
-  Add-Type -Path $_.FullName
+
+do {
+  Get-ChildItem "$PSScriptRoot\Classes" -Recurse -Include "*.cs" | ForEach-Object {
+    try {
+      Add-Type -Path $_.FullName -ErrorVariable "typeerror"
+    }
+    catch { }
+  }
 }
+while ($typeerror.Count -gt 0)
 $functions = Get-ChildItem function:\ | Where-Object { $_.Source -eq "PSEmby" } | ForEach-Object {
   $_.Name
 }
