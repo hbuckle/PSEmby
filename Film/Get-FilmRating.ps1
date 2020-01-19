@@ -8,12 +8,18 @@ function Get-FilmRating {
   $searchpath = [System.Uri]::EscapeUriString($Title)
   $uribuilder.Path = "/search/releases/$searchpath"
   $mapping = @{
-    "BBFC_U"   = "GB-U"
-    "BBFC_PG"  = "GB-PG"
-    "BBFC_12A" = "GB-12A"
-    "BBFC_12"  = "GB-12"
-    "BBFC_15"  = "GB-15"
-    "BBFC_18"  = "GB-18"
+    "BBFC_U"         = "GB-U"
+    "BBFC_PG"        = "GB-PG"
+    "BBFC_12A"       = "GB-12A"
+    "BBFC_12"        = "GB-12"
+    "BBFC_15"        = "GB-15"
+    "BBFC_18"        = "GB-18"
+    "BBFC%20U_RGB"   = "GB-U"
+    "BBFC%20PG_RGB"  = "GB-PG"
+    "BBFC%2012A_RGB" = "GB-12A"
+    "BBFC%2012_RGB"  = "GB-12"
+    "BBFC%2015_RGB"  = "GB-15"
+    "BBFC%2018_RGB"  = "GB-18"
   }
   try {
     $parser = [AngleSharp.Parser.Html.HtmlParser]::new()
