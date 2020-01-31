@@ -2,5 +2,9 @@ function Get-FileSafeName {
   param (
     [string]$Name
   )
-  return $Name.Replace(":", ";").Replace("?", "").Replace("/", "_")
+  $result = $Name.Replace(":", ";")
+  foreach ($invalidChar in [System.IO.Path]::GetInvalidFileNameChars()) {
+    $result = $result.Replace($invalidChar.ToString(), "")
+  }
+  Write-Output $result
 }
