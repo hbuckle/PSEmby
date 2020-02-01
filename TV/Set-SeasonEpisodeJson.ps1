@@ -7,7 +7,7 @@ function Set-SeasonEpisodeJson {
     [int]$SeasonNumber = 99,
     [string]$MetadataFolder = "\\CRUCIBLE\Metadata\metadata\People",
     [switch]$RedownloadPersonImage,
-    [switch]$ReleaseDate
+    [switch]$NoReleaseDate
   )
   Get-ChildItem -LiteralPath $SourceFolder -Filter "*.mkv" | ForEach-Object {
     $params = @{
@@ -16,7 +16,7 @@ function Set-SeasonEpisodeJson {
       ShowName       = $ShowName
       SeasonNumber   = $SeasonNumber
     }
-    Set-EpisodeJson @params -RedownloadPersonImage:$RedownloadPersonImage -ReleaseDate:$ReleaseDate
+    Set-EpisodeJson @params -RedownloadPersonImage:$RedownloadPersonImage -NoReleaseDate:$NoReleaseDate
   }
   $output = Join-Path $SourceFolder "season.json"
   if (Test-Path $output) {

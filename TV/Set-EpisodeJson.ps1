@@ -7,7 +7,7 @@ function Set-EpisodeJson {
     [int]$SeasonNumber = 99,
     [string]$MetadataFolder = "\\CRUCIBLE\Metadata\metadata\People",
     [switch]$RedownloadPersonImage,
-    [switch]$ReleaseDate,
+    [switch]$NoReleaseDate,
     [ValidateSet("Netflix")]
     [string]$DescriptionSource,
     [string]$DescriptionId
@@ -16,10 +16,10 @@ function Set-EpisodeJson {
   Write-Verbose "Set-EpisodeJson : PathToEpisode = $PathToEpisode"
   $output = $file.DirectoryName + "\" + $file.BaseName + ".json"
   if (Test-Path $output) {
-    $episodedetails = Get-Content $output -Raw | ConvertFrom-Json -AsHashtable
+    $episodedetails = Read-EpisodeJson -Path $output
   }
   else {
-    $episodedetails = @{ }
+    $episodedetails = [JsonMetadata.Models.JsonEpisode]::new()
   }
   $show = Import-TvShowJson -Folder $file.DirectoryName
   if ($null -eq $show) {
@@ -61,71 +61,67 @@ function Set-EpisodeJson {
   if ($null -eq $episode) {
     $episode = Get-TvEpisode -ShowId $showid -SeasonNumber $SeasonNumber -EpisodeNumber $episodeNumber
   }
-  $episodedetails["title"] = (Get-TitleCaseString $episode["name"])
-  $episodedetails["sorttitle"] = ""
-  $episodedetails["seasonnumber"] = $SeasonNumber
-  $episodedetails["episodenumber"] = $episodeNumber
-  $episodedetails["communityrating"] = $null
-  if ($null -eq $episodedetails["overview"]) {
-    $episodedetails["overview"] = ""
+  $episodedetails.title = (Get-TitleCaseString $episode["name"])
+  $episodedetails.sorttitle = ""
+  $episodedetails.seasonnumber = $SeasonNumber
+  $episodedetails.episodenumber = $episodeNumber
+  $episodedetails.communityrating = $null
+  if ($null -eq $episodedetails.overview) {
+    $episodedetails.overview = ""
   }
-  if ($ReleaseDate) {
-    $episodedetails["releasedate"] = $episode["air_date"]
+  if (!$NoReleaseDate -and ![string]::IsNullOrEmpty($episode["air_date"])) {
+    $episodedetails.releasedate = [datetime]::ParseExact($episode["air_date"], "yyyy-MM-dd", [System.Globalization.CultureInfo]::InvariantCulture)
   }
-  $episodedetails["year"] = ([datetime]$episode["air_date"]).Year
-  $episodedetails["parentalrating"] = $null
-  $episodedetails["customrating"] = ""
-  $episodedetails["imdbid"] = ""
-  $episodedetails["tvdbid"] = ""
-  $episodedetails["genres"] = @()
-  $episodedetails["people"] = @()
-  $episodedetails["studios"] = @()
-  $episodedetails["tags"] = @()
-  $episodedetails["lockdata"] = $true
+  $episodedetails.year = ([datetime]::ParseExact($episode["air_date"], "yyyy-MM-dd", [System.Globalization.CultureInfo]::InvariantCulture)).Year
+  $episodedetails.parentalrating = $null
+  $episodedetails.customrating = ""
+  $episodedetails.imdbid = ""
+  $episodedetails.tvdbid = ""
+  $episodedetails.genres = @()
+  $episodedetails.people = @()
+  $episodedetails.studios = @()
+  $episodedetails.tags = @()
+  $episodedetails.lockdata = $true
+  $episodedetails.path = ""
   foreach ($genre in $show["genres"]) {
-    $episodedetails["genres"] += $genre["name"]
+    $episodedetails.genres += $genre["name"]
   }
   $directors = @()
   $directors += $episode["crew"].Where( { $_.job -eq "Director" })
   foreach ($person in $directors) {
-    $episodeDirector = @{ }
-    $imagepath = Get-PersonImagePath -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"]
-    if (-not(Test-Path $imagepath) -or $RedownloadPersonImage) {
-      Save-TmdbPersonImage -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"] -Overwrite
+    $episodeDirector = [JsonMetadata.Models.JsonCastCrew]::new()
+    $personfolder = Get-PersonFolder -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"]
+    Set-PersonJson -Path (Join-Path $personfolder "person.json") -TmdbId $person["id"]
+    $personjson = Read-PersonJson -Path (Join-Path $personfolder "person.json")
+    $episodeDirector.name = $person["name"]
+    $episodeDirector.type = "Director"
+    $episodeDirector.role = ""
+    $episodeDirector.tmdbid = $person["id"]
+    $episodeDirector.path = $personfolder
+    $embymatches = @()
+    $embymatches += Get-EmbyPerson -Name $person["name"]
+    if ($embymatches.Count -eq 1) {
+      $episodeDirector.id = $embymatches[0].Id
     }
-    if (Test-Path $imagepath) {
-      $episodeDirector["thumb"] = $imagepath
-    }
-    else {
-      $episodeDirector["thumb"] = ""
-    }
-    $episodeDirector["name"] = $person["name"]
-    $episodeDirector["type"] = "Director"
-    $episodeDirector["role"] = ""
-    $episodeDirector["tmdbid"] = $person["id"]
-    $tmdbperson = Get-TmdbPerson -PersonId $person["id"]
-    if ($null -ne $tmdbperson["imdb_id"]) {
-      $episodeDirector["imdbid"] = $tmdbperson["imdb_id"]
+    if ($null -ne $personjson.imdbid) {
+      $episodeDirector.imdbid = $personjson.imdbid
     }
     else {
-      $episodeDirector["imdbid"] = ""
+      $episodeDirector.imdbid = ""
     }
-    $episodedetails["people"] += $episodeDirector
+    $episodedetails.people += $episodeDirector
   }
   switch ($DescriptionSource) {
     "Netflix" {
       $description = Get-EpisodeDescriptionNetflix -Id $DescriptionId -SeasonNumber $SeasonNumber -EpisodeNumber $episodeNumber
-      $episodedetails["overview"] = $description
+      $episodedetails.overview = $description
     }
     Default { }
   }
-  if (-not($episodedetails.ContainsKey("userdata"))) {
-    $episodedetails["userdata"] = @()
-  }
   if ($null -ne $tmdb["overrides"][$episodeId]) {
     foreach ($property in $tmdb["overrides"][$episodeId].GetEnumerator()) {
-      $episodedetails[$property.Key] = $property.Value
+      $episodedetails.$($property.Key) = $property.Value
     }
   }
-  $episodedetails | ConvertTo-Json -Depth 99 | Set-Content $output -Encoding utf8NoBOM
+  ConvertTo-JsonSerialize -InputObject $episodedetails | Set-Content $output -Encoding utf8NoBOM
 }

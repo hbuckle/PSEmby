@@ -14,6 +14,7 @@ function Set-PersonJson {
   if ($PSBoundParameters.ContainsKey("TmdbId")) {
     $person = Get-TmdbPerson -PersonId $TmdbId
     $InputObject = [JsonMetadata.Models.JsonPerson]::new()
+    $InputObject.tmdbid = $TmdbId.ToString()
     $InputObject.name = $person.name
     $InputObject.overview = $person.biography
     $InputObject.birthdate = ($null -ne $person.birthday ?
