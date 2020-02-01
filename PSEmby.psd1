@@ -9,6 +9,7 @@
   )
   RequiredAssemblies = @(
     '.\lib\AngleSharp.dll',
+    '.\lib\JsonMetadata.dll',
     '.\lib\System.Data.SQLite.dll'
   )
   FunctionsToExport  = @(
@@ -39,7 +40,7 @@
     'Get-FilmRating',
     'Get-Gcd',
     'Get-MkvToolnixOption',
-    'Get-PersonImagePath',
+    'Get-PersonFolder',
     'Get-Sar',
     'Get-TitleCaseString',
     'Get-TmdbPerson',
@@ -49,18 +50,18 @@
     'Get-VideoInfo',
     'Get-VStripPlaylist',
     'Import-TvShowJson',
-    'Import-TvShowNfo',
     'Initialize-TvShowRip',
     'Invoke-SqliteQuery',
     'New-SeasonEpisodeThumbnail',
     'New-SeasonFolder',
     'Optimize-JPEG',
+    'Read-EpisodeJson',
     'Read-FilmJson',
+    'Read-PersonJson',
     'Remove-MissingPeople',
     'Save-BRPlaylist',
     'Save-ChapterImage',
     'Save-DVDPlaylist',
-    'Save-FilmJson',
     'Save-PersonImage',
     'Save-SeasonChapterImage',
     'Save-TmdbPersonImage',
@@ -68,18 +69,16 @@
     'Set-DbPersonPath',
     'Set-EmbyPerson',
     'Set-EpisodeJson',
-    'Set-EpisodeNfo',
     'Set-FilmJson',
     'Set-FilmJsonGenre',
-    'Set-FilmNfo',
     'Set-MkvChapterName',
     'Set-OggChapterName',
+    'Set-PersonJson',
     'Set-SeasonEpisodeJson',
     'Set-SeasonEpisodeName',
-    'Set-SeasonEpisodeNfo',
     'Start-EmbyScheduledTask',
     'Update-EmbyPeople',
-    'Update-FilmDescription',
-    'Update-FilmJson'
+    'Update-FilmJson',
+    'Update-TmdbPeople'
   )
 }

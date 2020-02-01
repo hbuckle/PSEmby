@@ -1,4 +1,4 @@
-function Get-PersonImagePath {
+function Get-PersonFolder {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
@@ -14,6 +14,6 @@ function Get-PersonImagePath {
   }
   $sortfolder = $safeName[0]
   $personFolder = "$safeName ($PersonId)"
-  $outpath = Join-Path -Path $MetadataFolder -ChildPath "${sortfolder}\${personFolder}\poster.jpg"
+  $outpath = Join-Path -Path $MetadataFolder -ChildPath "${sortfolder}\${personFolder}"
   return $outpath
 }

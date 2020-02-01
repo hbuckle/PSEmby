@@ -5,116 +5,110 @@ function Set-FilmJson {
     [string]$PathToFilm,
     [string]$MetadataFolder = "\\CRUCIBLE\Metadata\metadata\People",
     [string]$TmdbId = "",
-    [string]$Description = "",
-    [switch]$RedownloadPersonImage
+    [string]$Description = ""
   )
   $file = Get-Item $PathToFilm
   Write-Verbose "Set-FilmJson : PathToFilm = $PathToFilm"
   $output = $file.DirectoryName + "\" + $file.BaseName + ".json"
   if (Test-Path $output) {
-    $movie = Get-Content $output -Raw | ConvertFrom-Json -AsHashtable
-    $null = $movie.Remove("__type")
+    $movie = Read-FilmJson -Path $output
   }
   else {
-    $movie = @{ }
+    $movie = [JsonMetadata.Models.JsonMovie]::new()
   }
   if (-not([String]::IsNullOrEmpty($TmdbId))) {
     $film = Get-Film -ID $TmdbId
   }
-  elseif ([String]::IsNullOrEmpty($movie["tmdbid"])) {
+  elseif ([String]::IsNullOrEmpty($movie.tmdbid)) {
     $film = Find-Film -Title $file.BaseName
   }
   else {
-    $film = Get-Film -ID $movie["tmdbid"]
+    $film = Get-Film -ID $movie.tmdbid
   }
   $credits = Get-FilmCredits -ID $film["id"]
   $directors = @()
   $directors += $credits["crew"].Where( { $_["job"] -eq "Director" })
   $actors = $credits["cast"]
-  $movie["title"] = (Get-TitleCaseString $film["title"])
-  $movie["originaltitle"] = ""
-  $movie["tagline"] = ""
-  $movie["customrating"] = ""
-  $movie["sorttitle"] = $file.Directory.Name
-  $movie["year"] = ([datetime]$film["release_date"]).Year
-  $movie["imdbid"] = ""
-  $movie["tmdbid"] = $film["id"].ToString()
+  $movie.title = (Get-TitleCaseString $film["title"])
+  $movie.originaltitle = ""
+  $movie.tagline = ""
+  $movie.customrating = ""
+  $movie.communityrating = $null
+  $movie.releasedate = $null
+  $movie.sorttitle = $file.Directory.Name
+  $movie.year = ([datetime]$film["release_date"]).Year
+  $movie.imdbid = $film["imdb_id"]
+  $movie.tmdbid = $film["id"].ToString()
+  $movie.path = ""
   if ($null -ne $film["belongs_to_collection"]) {
-    $movie["tmdbcollectionid"] = $film["belongs_to_collection"]["id"]
+    $movie.tmdbcollectionid = $film["belongs_to_collection"]["id"]
   }
   else {
-    $movie["tmdbcollectionid"] = ""
+    $movie.tmdbcollectionid = ""
   }
-  $movie["lockdata"] = $true
-  $movie["genres"] = @()
-  $movie["studios"] = @()
-  $movie["tags"] = @()
-  $movie["people"] = @()
+  $movie.lockdata = $true
+  $movie.genres = @()
+  $movie.studios = @()
+  $movie.tags = @()
+  $movie.people = @()
   foreach ($genre in $film["genres"]) {
-    $movie["genres"] += $genre["name"]
+    $movie.genres += $genre["name"]
   }
   foreach ($person in $directors) {
-    $movieDirector = @{ }
-    $imagepath = Get-PersonImagePath -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"]
-    if (-not(Test-Path $imagepath) -or $RedownloadPersonImage) {
-      Save-TmdbPersonImage -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"] -Overwrite
+    $movieDirector = [JsonMetadata.Models.JsonCastCrew]::new()
+    $personfolder = Get-PersonFolder -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"]
+    Set-PersonJson -Path (Join-Path $personfolder "person.json") -TmdbId $person["id"]
+    $personjson = Read-PersonJson -Path (Join-Path $personfolder "person.json")
+    $movieDirector.name = $person["name"]
+    $movieDirector.type = "Director"
+    $movieDirector.role = ""
+    $movieDirector.tmdbid = $person["id"]
+    $movieDirector.path = $personfolder
+    $embymatches = @()
+    $embymatches += Get-EmbyPerson -Name $person["name"]
+    if ($embymatches.Count -eq 1) {
+      $movieDirector.id = $embymatches[0].Id
     }
-    if (Test-Path $imagepath) {
-      $movieDirector["thumb"] = $imagepath
-    }
-    else {
-      $movieDirector["thumb"] = ""
-    }
-    $movieDirector["name"] = $person["name"]
-    $movieDirector["type"] = "Director"
-    $movieDirector["role"] = ""
-    $movieDirector["tmdbid"] = $person["id"]
-    $tmdbperson = Get-TmdbPerson -PersonId $person["id"]
-    if ($null -ne $tmdbperson["imdb_id"]) {
-      $movieDirector["imdbid"] = $tmdbperson["imdb_id"]
+    if ($null -ne $personjson.imdbid) {
+      $movieDirector.imdbid = $personjson.imdbid
     }
     else {
-      $movieDirector["imdbid"] = ""
+      $movieDirector.imdbid = ""
     }
-    $movie["people"] += $movieDirector
+    $movie.people += $movieDirector
   }
   foreach ($person in $actors) {
-    $movieActor = @{ }
-    $imagepath = Get-PersonImagePath -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"]
-    if (-not(Test-Path $imagepath) -or $RedownloadPersonImage) {
-      Save-TmdbPersonImage -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"] -Overwrite
+    $movieActor = [JsonMetadata.Models.JsonCastCrew]::new()
+    $personfolder = Get-PersonFolder -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"]
+    Set-PersonJson -Path (Join-Path $personfolder "person.json") -TmdbId $person["id"]
+    $personjson = Read-PersonJson -Path (Join-Path $personfolder "person.json")
+    $movieActor.name = $person["name"]
+    $movieActor.type = "Actor"
+    $movieActor.role = $person["character"]
+    $movieActor.tmdbid = $person["id"]
+    $movieActor.path = $personfolder
+    $embymatches = @()
+    $embymatches += Get-EmbyPerson -Name $person["name"]
+    if ($embymatches.Count -eq 1) {
+      $movieDirector.id = $embymatches[0].Id
     }
-    if (Test-Path $imagepath) {
-      $movieActor["thumb"] = $imagepath
-    }
-    else {
-      $movieActor["thumb"] = ""
-    }
-    $movieActor["name"] = $person["name"]
-    $movieActor["type"] = "Actor"
-    $movieActor["role"] = $person["character"]
-    $movieActor["tmdbid"] = $person["id"]
-    $tmdbperson = Get-TmdbPerson -PersonId $person["id"]
-    if ($null -ne $tmdbperson["imdb_id"]) {
-      $movieActor["imdbid"] = $tmdbperson["imdb_id"]
+    if ($null -ne $personjson.imdbid) {
+      $movieActor.imdbid = $personjson.imdbid
     }
     else {
-      $movieActor["imdbid"] = ""
+      $movieActor.imdbid = ""
     }
-    $movie["people"] += $movieActor
+    $movie.people += $movieActor
   }
   if (-not([String]::IsNullOrEmpty($Description))) {
-    $movie["overview"] = $Description
+    $movie.overview = $Description
   }
-  elseif ([string]::IsNullOrEmpty($movie["overview"])) {
+  elseif ([string]::IsNullOrEmpty($movie.overview)) {
     $desc = Get-FilmDescription $film["title"]
-    $movie["overview"] = $desc.review
+    $movie.overview = $desc.review
   }
-  if (-not($movie.ContainsKey("userdata"))) {
-    $movie["userdata"] = @()
+  if ([string]::IsNullOrEmpty($movie.parentalrating)) {
+    $movie.parentalrating = Get-FilmRating -Title $movie.title
   }
-  if ([string]::IsNullOrEmpty($movie["parentalrating"])) {
-    $movie["parentalrating"] = Get-FilmRating -Title $movie["title"]
-  }
-  $movie | ConvertTo-Json -Depth 99 | Set-Content $output -Encoding utf8NoBOM
+  ConvertTo-JsonSerialize -InputObject $movie | Set-Content $output -Encoding utf8NoBOM
 }
