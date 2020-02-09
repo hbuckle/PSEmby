@@ -58,5 +58,5 @@ function Set-PersonJson {
       $InputObject.images.Add($jsonimage)
     }
   }
-  ConvertTo-JsonSerialize -InputObject $InputObject | Set-Content -Path $Path -Encoding utf8NoBOM
+  ConvertTo-JsonSerialize -InputObject $InputObject | Set-Content -Path $Path -Encoding utf8NoBOM -NoNewline
 }

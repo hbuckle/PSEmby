@@ -90,7 +90,7 @@ function Set-FilmJson {
     $embymatches = @()
     $embymatches += Get-EmbyPerson -Name $person["name"]
     if ($embymatches.Count -eq 1) {
-      $movieDirector.id = $embymatches[0].Id
+      $movieActor.id = $embymatches[0].Id
     }
     if ($null -ne $personjson.imdbid) {
       $movieActor.imdbid = $personjson.imdbid
@@ -110,5 +110,5 @@ function Set-FilmJson {
   if ([string]::IsNullOrEmpty($movie.parentalrating)) {
     $movie.parentalrating = Get-FilmRating -Title $movie.title
   }
-  ConvertTo-JsonSerialize -InputObject $movie | Set-Content $output -Encoding utf8NoBOM
+  ConvertTo-JsonSerialize -InputObject $movie | Set-Content $output -Encoding utf8NoBOM -NoNewline
 }

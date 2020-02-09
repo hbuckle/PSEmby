@@ -9,5 +9,10 @@ function ConvertFrom-JsonSerialize {
   $options.Converters.Add(
     [JsonMetadata.Models.DateTimeConverter]::new("yyyy-MM-dd")
   )
-  [System.Text.Json.JsonSerializer]::Deserialize($string, $Type)
+  try {
+    [System.Text.Json.JsonSerializer]::Deserialize($string, $Type)
+  }
+  catch {
+    throw "Error deserializing ${Path} : $($_.Exception.Message)"
+  }
 }
