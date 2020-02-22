@@ -6,7 +6,6 @@ function Set-EpisodeJson {
     [string]$ShowName,
     [int]$SeasonNumber = 99,
     [string]$MetadataFolder = "\\CRUCIBLE\Metadata\metadata\People",
-    [switch]$RedownloadPersonImage,
     [switch]$NoReleaseDate,
     [ValidateSet("Netflix")]
     [string]$DescriptionSource,
@@ -21,8 +20,8 @@ function Set-EpisodeJson {
   else {
     $episodedetails = [JsonMetadata.Models.JsonEpisode]::new()
   }
-  $show = Import-TvShowJson -Folder $file.DirectoryName
-  if ($null -eq $show) {
+  $seriesjson = Import-SeriesJson -Folder $file.DirectoryName
+  if ($null -eq $seriesjson) {
     try {
       $show = (Get-Variable -Scope "Script" -Name $ShowName).Value
     }
@@ -33,7 +32,7 @@ function Set-EpisodeJson {
     $showid = $show["id"]
   }
   else {
-    $showid = $show["tmdbid"]
+    $showid = $seriesjson.tmdbid
   }
   if ($SeasonNumber -eq 99) {
     try {
@@ -48,7 +47,8 @@ function Set-EpisodeJson {
   $episodeNumber = [int]($file.BaseName -split " - ")[0].Remove(0, 4)
   $episode = $null
   if (Test-Path (Join-Path $file.DirectoryName "tmdb.json")) {
-    $tmdb = Get-Content (Join-Path $file.DirectoryName "tmdb.json") | ConvertFrom-Json -AsHashtable -Depth 99
+    $tmdb = Get-Content (Join-Path $file.DirectoryName "tmdb.json") |
+      ConvertFrom-Json -AsHashtable -Depth 99
     if ($null -ne $tmdb["episodegroupid"]) {
       $season = Get-TvSeason -EpisodeGroupId $tmdb["episodegroupid"] -SeasonId $tmdb["seasonid"]
       $episode = $season["episodes"] | Where-Object order -eq ($episodeNumber - 1)
@@ -75,7 +75,10 @@ function Set-EpisodeJson {
   $episodedetails.year = ([datetime]::ParseExact($episode["air_date"], "yyyy-MM-dd", [System.Globalization.CultureInfo]::InvariantCulture)).Year
   $episodedetails.parentalrating = $null
   $episodedetails.customrating = ""
-  $episodedetails.imdbid = ""
+  $episodedetails.imdbid = ($null -ne $episode["external_ids"]["imdb_id"] ?
+    $episode["external_ids"]["imdb_id"] :
+    ""
+  )
   $episodedetails.tvdbid = ""
   $episodedetails.genres = @()
   $episodedetails.people = @()
@@ -123,5 +126,5 @@ function Set-EpisodeJson {
       $episodedetails.$($property.Key) = $property.Value
     }
   }
-  ConvertTo-JsonSerialize -InputObject $episodedetails | Set-Content $output -Encoding utf8NoBOM
+  ConvertTo-JsonSerialize -InputObject $episodedetails | Set-Content $output -Encoding utf8NoBOM -NoNewline
 }

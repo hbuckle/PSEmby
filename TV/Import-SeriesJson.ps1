@@ -1,4 +1,4 @@
-function Import-TvShowJson {
+function Import-SeriesJson {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
@@ -6,7 +6,7 @@ function Import-TvShowJson {
   )
   do {
     if (Test-Path "$Folder\tvshow.json") {
-      return Get-Content "$Folder\tvshow.json" -Raw | ConvertFrom-Json -AsHashtable
+      return (Read-SeriesJson -Path "$Folder\tvshow.json")
     }
     $Folder = Split-Path $Folder
   } while (Test-Path $Folder)
