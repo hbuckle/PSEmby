@@ -9,5 +9,7 @@ function Get-TvEpisode {
     [int]$EpisodeNumber
   )
   $client = [tmdbclient]::new($Script:tmdb_api_key)
-  return $client.gettvepisode($ShowId, $SeasonNumber, $EpisodeNumber)
+  $episode = $client.gettvepisode($ShowId, $SeasonNumber, $EpisodeNumber)
+  $episode["external_ids"] = $client.gettvepisodeexternalids($ShowId, $SeasonNumber, $EpisodeNumber)
+  return $episode
 }
