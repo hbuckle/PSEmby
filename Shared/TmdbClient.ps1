@@ -42,6 +42,10 @@ class tmdbclient {
     $path = "/tv/${id}/season/${seasonnumber}/episode/${episodenumber}"
     return $this.invokeapi($path)
   }
+  [Object] gettvepisodeexternalids([String] $id, [String] $seasonnumber, [String]$episodenumber) {
+    $path = "/tv/${id}/season/${seasonnumber}/episode/${episodenumber}/external_ids"
+    return $this.invokeapi($path)
+  }
   [Object] gettvepisodegroups([String] $id) {
     $path = "/tv/${id}/episode_groups"
     return $this.invokeapi($path)
