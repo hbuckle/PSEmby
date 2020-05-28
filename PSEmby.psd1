@@ -13,11 +13,11 @@
     '.\lib\System.Data.SQLite.dll'
   )
   FunctionsToExport  = @(
-    'ConvertFrom-JsonSerialize',
-    'ConvertTo-JsonSerialize',
     'Convert-TvSeasonBr',
     'Convert-TvSeasonDvd',
     'Convert-Video',
+    'ConvertFrom-JsonSerialize',
+    'ConvertTo-JsonSerialize',
     'Copy-FileName',
     'Export-BRSubs',
     'Export-ForcedSubs',
@@ -26,6 +26,7 @@
     'Find-EmbyItem',
     'Find-Film',
     'Find-TvShow',
+    'Get-BDMVIndex',
     'Get-DarAdjustment',
     'Get-DVDAudioDelay',
     'Get-Eac3toPlaylist',
