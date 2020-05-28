@@ -3,11 +3,12 @@ function Initialize-TvShowRip {
   param (
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [string]$SourceFolder,
+
     [string]$ShowName,
-    [string]$SortName,
-    [string]$TmdbId,
+
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [int]$Seasons,
+
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][ValidateSet("UK", "US")]
     [string]$Region
   )
@@ -15,21 +16,10 @@ function Initialize-TvShowRip {
     $show = Get-Content "$SourceFolder\show.json" | ConvertFrom-Json
   }
   else {
-    if ([String]::IsNullOrEmpty($ShowName)) {
-      throw "Missing ShowName"
-    }
-    if ([String]::IsNullOrEmpty($TmdbId)) {
-      throw "Missing TmdbId"
-    }
+    $tvshow = Find-TvShow -Title $ShowName
     $show = @{
       "name"   = $ShowName
-      "tmdbid" = $TmdbId
-    }
-    if (-not([String]::IsNullOrEmpty($SortName))) {
-      $show["sortname"] = $SortName
-    }
-    else {
-      $show["sortname"] = $ShowName
+      "tmdbid" = $tvshow.id
     }
     $show | ConvertTo-Json | Set-Content "$SourceFolder\show.json" -Encoding utf8NoBOM
   }
@@ -48,7 +38,7 @@ function Initialize-TvShowRip {
       @{
         "number"       = $i
         "episodecount" = $episodecount
-        "seasonid"     = (Get-TvSeason -ShowId $TmdbId -SeasonNumber $i)["Id"]
+        "seasonid"     = (Get-TvSeason -ShowId $tvshow.id -SeasonNumber $i)["Id"]
       } | ConvertTo-Json | Set-Content "$seasonpath\season.json" -Encoding utf8NoBOM
       New-Item "$seasonpath\DISKS" -ItemType Directory | Out-Null
       New-SeasonFolder -SourceFolder $seasonpath -SeasonNumber $i -NumberOfEpisodes $episodecount
