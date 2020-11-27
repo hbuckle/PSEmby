@@ -13,6 +13,7 @@ function Get-BBFCRating {
         type
         date
         dataType
+        id
       }
     }
   }
