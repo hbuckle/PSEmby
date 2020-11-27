@@ -108,7 +108,7 @@ function Set-FilmJson {
     $movie.overview = $desc.review
   }
   if ([string]::IsNullOrEmpty($movie.parentalrating)) {
-    $movie.parentalrating = Get-FilmRating -Title $movie.title
+    $movie.parentalrating = Get-BBFCRating -Title $movie.title
   }
   ConvertTo-JsonSerialize -InputObject $movie | Set-Content $output -Encoding utf8NoBOM -NoNewline
 }

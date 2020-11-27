@@ -1,4 +1,4 @@
-function Get-FilmRating {
+function Get-BBFCRating {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
