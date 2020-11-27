@@ -2,7 +2,7 @@ function Save-ChapterImage {
   [CmdletBinding()]
   param (
     [string]$InputFile,
-    [string]$OutputPath = ((Get-Item $InputFile).DirectoryName + "\Chapters")
+    [string]$OutputPath = ((Get-Item $InputFile).DirectoryName + "\Chapters\" + (Get-Item $InputFile).BaseName)
   )
   $info = Get-VideoInfo -Path $InputFile
   if ($info["chapters"].Count -gt 0) {

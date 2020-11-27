@@ -18,6 +18,7 @@ function Get-FilmMissingDataReport {
         VideoCodec       = ""
         Width            = 0
         Height           = 0
+        FrameRate        = 0
         AudioTracks      = 0
         AudioCodecs      = @()
         InternalChapters = $false
@@ -47,6 +48,7 @@ function Get-FilmMissingDataReport {
       $props.VideoCodec = $videoStream["codec_name"]
       $props.Height = $videoStream["height"]
       $props.Width = $videoStream["width"]
+      $props.FrameRate = $videoStream["r_frame_rate"]
       $props.AudioTracks = $audioStreams.Count
       foreach ($track in $audioStreams) {
         $props.AudioCodecs += $track["codec_name"]

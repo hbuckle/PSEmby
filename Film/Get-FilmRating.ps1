@@ -4,58 +4,44 @@ function Get-FilmRating {
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
     [string]$Title
   )
-  $uribuilder = [System.UriBuilder]::new("https://bbfc.co.uk")
-  $searchpath = [System.Uri]::EscapeUriString($Title)
-  $uribuilder.Path = "/search/releases/$searchpath"
-  $mapping = @{
-    "BBFC_U"         = "GB-U"
-    "BBFC_PG"        = "GB-PG"
-    "BBFC_12A"       = "GB-12A"
-    "BBFC_12"        = "GB-12"
-    "BBFC_15"        = "GB-15"
-    "BBFC_18"        = "GB-18"
-    "BBFC%20U_RGB"   = "GB-U"
-    "BBFC%20PG_RGB"  = "GB-PG"
-    "BBFC%2012A_RGB" = "GB-12A"
-    "BBFC%2012_RGB"  = "GB-12"
-    "BBFC%2015_RGB"  = "GB-15"
-    "BBFC%2018_RGB"  = "GB-18"
-  }
-  try {
-    $parser = [AngleSharp.Parser.Html.HtmlParser]::new()
-    $searchresult = Invoke-RestMethod $uribuilder.ToString()
-    $searchpage = $parser.Parse($searchresult)
-    $searchresults = $searchpage.GetElementsByClassName("search-result")
-    $features = @()
-    foreach ($result in $searchresults) {
-      $footer = $result.GetElementsByClassName("search-snippet-footer")
-      if ($footer.InnerText -notmatch "Feature") {
-        continue
-      }
-      $features += $result
-    }
-    $choices = @()
-    foreach ($feature in $features) {
-      $choices += @{
-        Title  = $feature.GetElementsByClassName("title").InnerText
-        Symbol = $feature.GetElementsByClassName("symbol").FirstChild.Source
+  $query = '
+  query Search($title: String!, $page:Int!) {
+    search(url: "https://www.bbfc.co.uk/", searchTerm: $title, page: $page, excludeArticles: true) {
+      results {
+        title
+        classification
+        type
+        date
+        dataType
       }
     }
-    $choice = Select-ItemFromList -List $choices -Properties @("Title") -Title "Rating"
-    $rating = ""
-    if ($null -ne $choice) {
-      $uri = [System.Uri]::new($choice["Symbol"])
-      $image = $uri.Segments | Select-Object -Last 1
-      foreach ($key in $mapping.Keys) {
-        if ($image.StartsWith($key)) {
-          $rating = $mapping[$key]
-          break
-        }
+  }
+  '.TrimStart().TrimEnd()
+  $results = @()
+  $page = 1
+  $more = $true
+  do {
+    $body = @{
+      query     = $query
+      variables = @{
+        title = $Title
+        page  = $page
       }
+    } | ConvertTo-Json -Depth 99 -Compress
+    $response = Invoke-RestMethod -Uri "https://www.bbfc.co.uk/graphql" -Body $body -ContentType "application/json" -Method Post
+    $results += $response.data.search.results
+    if ($response.data.search.results.Count -eq 0) {
+      $more = $false
     }
-    return $rating
+    else {
+      $null = $page++
+    }
+  } while ($more)
+
+  $choice = Select-ItemFromList -List $results -Properties @("title", "date", "type", "classification") -Title "Rating"
+  $rating = ""
+  if ($null -ne $choice) {
+    $rating = "GB-$($choice.classification)"
   }
-  catch {
-    Write-Warning $_.Exception.Message
-  }
+  Write-Output $rating
 }
