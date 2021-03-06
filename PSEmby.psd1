@@ -52,6 +52,7 @@
     'Get-VStripPlaylist',
     'Import-SeriesJson',
     'Initialize-TvShowRip',
+    'Invoke-Process',
     'Invoke-SqliteQuery',
     'New-SeasonEpisodeThumbnail',
     'New-SeasonFolder',
