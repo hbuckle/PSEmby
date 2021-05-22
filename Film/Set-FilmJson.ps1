@@ -39,7 +39,10 @@ function Set-FilmJson {
   $movie.year = ([datetime]$film["release_date"]).Year
   $movie.imdbid = $film["imdb_id"]
   $movie.tmdbid = $film["id"].ToString()
-  $movie.path = ""
+  if ($null -eq $movie.collections) {
+    $movie.collections = @()
+  }
+  # $movie.path = ""
   if ($null -ne $film["belongs_to_collection"]) {
     $movie.tmdbcollectionid = $film["belongs_to_collection"]["id"]
   }
@@ -56,47 +59,31 @@ function Set-FilmJson {
   }
   foreach ($person in $directors) {
     $movieDirector = [JsonMetadata.Models.JsonCastCrew]::new()
-    $personfolder = Get-PersonFolder -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"]
-    Set-PersonJson -Path (Join-Path $personfolder "person.json") -TmdbId $person["id"]
-    $personjson = Read-PersonJson -Path (Join-Path $personfolder "person.json")
     $movieDirector.name = $person["name"]
     $movieDirector.type = "Director"
     $movieDirector.role = ""
     $movieDirector.tmdbid = $person["id"]
-    $movieDirector.path = $personfolder
-    $embymatches = @()
-    $embymatches += Get-EmbyPerson -Name $person["name"]
-    if ($embymatches.Count -eq 1) {
-      $movieDirector.id = $embymatches[0].Id
-    }
-    if ($null -ne $personjson.imdbid) {
-      $movieDirector.imdbid = $personjson.imdbid
+    $tmdbperson = Get-TmdbPerson -PersonId $person.id
+    if ([string]::IsNullOrEmpty($tmdbperson["imdb_id"])) {
+      $movieDirector.imdbid = ""
     }
     else {
-      $movieDirector.imdbid = ""
+      $movieDirector.imdbid = $tmdbperson["imdb_id"]
     }
     $movie.people += $movieDirector
   }
   foreach ($person in $actors) {
     $movieActor = [JsonMetadata.Models.JsonCastCrew]::new()
-    $personfolder = Get-PersonFolder -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"]
-    Set-PersonJson -Path (Join-Path $personfolder "person.json") -TmdbId $person["id"]
-    $personjson = Read-PersonJson -Path (Join-Path $personfolder "person.json")
     $movieActor.name = $person["name"]
     $movieActor.type = "Actor"
     $movieActor.role = $person["character"]
     $movieActor.tmdbid = $person["id"]
-    $movieActor.path = $personfolder
-    $embymatches = @()
-    $embymatches += Get-EmbyPerson -Name $person["name"]
-    if ($embymatches.Count -eq 1) {
-      $movieActor.id = $embymatches[0].Id
-    }
-    if ($null -ne $personjson.imdbid) {
-      $movieActor.imdbid = $personjson.imdbid
+    $tmdbperson = Get-TmdbPerson -PersonId $person.id
+    if ([string]::IsNullOrEmpty($tmdbperson["imdb_id"])) {
+      $movieActor.imdbid = ""
     }
     else {
-      $movieActor.imdbid = ""
+      $movieActor.imdbid = $tmdbperson["imdb_id"]
     }
     $movie.people += $movieActor
   }

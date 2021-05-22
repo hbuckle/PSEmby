@@ -51,7 +51,7 @@ function Set-EpisodeJson {
       ConvertFrom-Json -AsHashtable -Depth 99
     if ($null -ne $tmdb["episodegroupid"]) {
       $season = Get-TvSeason -EpisodeGroupId $tmdb["episodegroupid"] -SeasonId $tmdb["seasonid"]
-      $episode = $season["episodes"] | Where-Object order -eq ($episodeNumber - 1)
+      $episode = $season["episodes"] | Where-Object order -EQ ($episodeNumber - 1)
       $episode = Get-TvEpisode -ShowId $showid -SeasonNumber $episode["season_number"] -EpisodeNumber $episode["episode_number"]
     }
   }
@@ -85,7 +85,6 @@ function Set-EpisodeJson {
   $episodedetails.studios = @()
   $episodedetails.tags = @()
   $episodedetails.lockdata = $true
-  $episodedetails.path = ""
   foreach ($genre in $show["genres"]) {
     $episodedetails.genres += $genre["name"]
   }
@@ -93,24 +92,16 @@ function Set-EpisodeJson {
   $directors += $episode["crew"].Where( { $_.job -eq "Director" })
   foreach ($person in $directors) {
     $episodeDirector = [JsonMetadata.Models.JsonCastCrew]::new()
-    $personfolder = Get-PersonFolder -MetadataFolder $MetadataFolder -PersonName $person["name"] -PersonId $person["id"]
-    Set-PersonJson -Path (Join-Path $personfolder "person.json") -TmdbId $person["id"]
-    $personjson = Read-PersonJson -Path (Join-Path $personfolder "person.json")
     $episodeDirector.name = $person["name"]
     $episodeDirector.type = "Director"
     $episodeDirector.role = ""
     $episodeDirector.tmdbid = $person["id"]
-    $episodeDirector.path = $personfolder
-    $embymatches = @()
-    $embymatches += Get-EmbyPerson -Name $person["name"]
-    if ($embymatches.Count -eq 1) {
-      $episodeDirector.id = $embymatches[0].Id
-    }
-    if ($null -ne $personjson.imdbid) {
-      $episodeDirector.imdbid = $personjson.imdbid
+    $tmdbperson = Get-TmdbPerson -PersonId $person.id
+    if ([string]::IsNullOrEmpty($tmdbperson["imdb_id"])) {
+      $episodeDirector.imdbid = ""
     }
     else {
-      $episodeDirector.imdbid = ""
+      $episodeDirector.imdbid = $tmdbperson["imdb_id"]
     }
     $episodedetails.people += $episodeDirector
   }

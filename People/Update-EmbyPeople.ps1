@@ -6,8 +6,6 @@ function Update-EmbyPeople {
     [ValidateNotNullOrEmpty()]
     [string]$ApiKey = $Script:emby_api_key
   )
-  Start-EmbyScheduledTask -Server $Server -ApiKey $ApiKey -TaskName "Refresh people" -WaitForCompletion
-  Start-EmbyScheduledTask -Server $Server -ApiKey $ApiKey -TaskName "Set people paths" -WaitForCompletion
   $persons = Get-EmbyPeople -Server $Server -ApiKey $ApiKey
   $count = 1
   foreach ($person in $persons) {

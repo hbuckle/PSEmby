@@ -14,8 +14,8 @@ function Get-EpisodeDescriptionNetflix {
   }
   catch {
     $page = Invoke-RestMethod $uri
-    $parser = [AngleSharp.Parser.Html.HtmlParser]::new()
-    $parsed = $parser.Parse($page)
+    $parser = [AngleSharp.Html.Parser.HtmlParser]::new()
+    $parsed = $parser.ParseDocument($page)
     New-Variable -Scope "Script" -Name $Id -Value $parsed
   }
   # $seasons = $parsed.GetElementsByClassName("kitchen-sink-grid-wrapper")
