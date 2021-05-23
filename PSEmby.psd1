@@ -40,6 +40,7 @@
     'Get-FilmDescription',
     'Get-FilmMissingDataReport',
     'Get-Gcd',
+    'Get-MediaInfo',
     'Get-MkvToolnixOption',
     'Get-PersonFolder',
     'Get-Sar',

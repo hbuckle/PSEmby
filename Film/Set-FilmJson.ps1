@@ -42,7 +42,6 @@ function Set-FilmJson {
   if ($null -eq $movie.collections) {
     $movie.collections = @()
   }
-  # $movie.path = ""
   if ($null -ne $film["belongs_to_collection"]) {
     $movie.tmdbcollectionid = $film["belongs_to_collection"]["id"]
   }
