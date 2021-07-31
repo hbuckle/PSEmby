@@ -19,10 +19,8 @@ function Get-FilmDescription {
   $reviewdocument = $parser.ParseDocument($reviewpage)
   $search = @()
   $object = @{ review = "" }
-  $object["title"] = $reviewdocument.GetElementsByClassName("programme-header__heading  js-programme-page-header").TextContent.Trim()
-  $object["review"] = $reviewdocument.GetElementsByClassName("episode-extra__copy") |
-    Where-Object { $_.Attributes.Value -eq "reviewBody" } |
-    Select-Object -ExpandProperty TextContent | ForEach-Object { $_.Trim() }
+  $object["title"] = $reviewdocument.GetElementsByClassName("post-header__title post-header__title--masthead-layout heading-2").TextContent.Trim()
+  $object["review"] = $reviewdocument.GetElementById('show-review-review-region').GetElementsByClassName('editor-content').TextContent.Trim()
   $search += New-Object -TypeName "PSObject" -Property $object
   $selected = Select-ItemFromList -List $search -Properties @("title", "review")
   if ($null -eq $selected) {

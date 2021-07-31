@@ -8,6 +8,8 @@ function Set-FilmJson {
     [string]$Description = ""
   )
   $file = Get-Item $PathToFilm
+  $info = Get-MediaInfo -InputFile $PathToFilm -AsHashtable
+  $video = $info.media.track | Where-Object { $_.'@type' -eq 'Video' }
   Write-Verbose "Set-FilmJson : PathToFilm = $PathToFilm"
   $output = $file.DirectoryName + "\" + $file.BaseName + ".json"
   if (Test-Path $output) {
@@ -95,6 +97,12 @@ function Set-FilmJson {
   }
   if ([string]::IsNullOrEmpty($movie.parentalrating)) {
     $movie.parentalrating = Get-BBFCRating -Title $movie.title
+  }
+  if ($video.Sampled_Width -eq 3840 -and $video.Sampled_Height -eq 2160 -and !$movie.collections.Contains('4K Ultra HD')) {
+    $movie.collections = ($movie.collections + @('4K Ultra HD'))
+  }
+  if ($video['HDR_Format'] -match 'Dolby Vision' -and !$movie.collections.Contains('Dolby Vision')) {
+    $movie.collections = ($movie.collections + @('Dolby Vision'))
   }
   ConvertTo-JsonSerialize -InputObject $movie | Set-Content $output -Encoding utf8NoBOM -NoNewline
 }
