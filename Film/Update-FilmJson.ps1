@@ -1,13 +1,13 @@
 function Update-FilmJson {
   [CmdletBinding()]
   param (
-    [string]$Path = "\\CRUCIBLE\Films"
+    [string]$Path = '\\CRUCIBLE\Films'
   )
-  $jsons = @()
-  $jsons += Get-ChildItem -Path $Path -Include "*.json" -Recurse
+  $files = @()
+  $files += Get-ChildItem -Path $Path -Filter '*.mkv' -Recurse -Depth 1
   $count = 1
-  $jsons | ForEach-Object {
-    Write-Progress -Activity "Updating film metadata" -CurrentOperation $_.Name -PercentComplete ($count / $jsons.Count * 100)
+  $files | ForEach-Object {
+    Write-Progress -Activity 'Updating film metadata' -CurrentOperation $_.Name -PercentComplete ($count / $files.Count * 100)
     Set-FilmJson -PathToFilm $_.FullName
     $count++
   }

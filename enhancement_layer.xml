@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Tags>
+  <Tag>
+    <Targets>
+      <TrackUID>1</TrackUID>
+    </Targets>
+    <Simple>
+      <Name>enhancement_layer</Name>
+      <String>FEL</String>
+    </Simple>
+  </Tag>
+</Tags>
