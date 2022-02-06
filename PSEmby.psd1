@@ -68,6 +68,7 @@
     'Save-ChapterImage',
     'Save-DVDPlaylist',
     'Save-SeasonChapterImage',
+    'Save-YouTubePlaylist',
     'Select-ItemFromList',
     'Set-DbPersonPath',
     'Set-EmbyPerson',

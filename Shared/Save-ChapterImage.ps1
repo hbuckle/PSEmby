@@ -54,4 +54,7 @@ function Save-ChapterImage {
       & ffmpeg $commands
     }
   }
+  if (Test-Path $OutputPath) {
+    Optimize-JPEG -SourceFolder $OutputPath
+  }
 }
