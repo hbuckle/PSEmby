@@ -29,6 +29,7 @@
     'Get-BBFCRating',
     'Get-BDMVIndex',
     'Get-DarAdjustment',
+    'Get-DoviInfo',
     'Get-DVDAudioDelay',
     'Get-Eac3toPlaylist',
     'Get-EmbyPeople',
@@ -80,7 +81,7 @@
     'Set-SeasonEpisodeJson',
     'Set-SeasonEpisodeName',
     'Start-EmbyScheduledTask',
-    'Update-EmbyPeople',
+    'Update-EmbyPerson',
     'Update-FilmJson',
     'Update-TmdbPeople'
   )
