@@ -4,7 +4,7 @@ function Save-ChapterImage {
     [string]$InputFile,
     [string]$OutputPath = ((Get-Item $InputFile).DirectoryName + '\Chapters\' + (Get-Item $InputFile).BaseName)
   )
-  $info = Get-VideoInfo -Path $InputFile
+  $info = Get-VideoInfo -InputFile $InputFile
   if ($info['chapters'].Count -gt 0) {
     if (-not(Test-Path $OutputPath)) {
       $null = New-Item $OutputPath -ItemType Directory
