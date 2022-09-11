@@ -8,7 +8,7 @@ function Update-FilmJson {
   $count = 1
   $files | ForEach-Object {
     Write-Progress -Activity 'Updating film metadata' -CurrentOperation $_.Name -PercentComplete ($count / $files.Count * 100)
-    Set-FilmJson -PathToFilm $_.FullName
+    Set-FilmJson -InputFile $_.FullName
     $count++
   }
 }

@@ -2,7 +2,7 @@ function Start-EmbyScheduledTask {
   [CmdletBinding()]
   param (
     [ValidateNotNullOrEmpty()]
-    [string]$Server = "https://emby.crucible.org.uk",
+    [string]$Server = 'https://emby.crucible.org.uk',
     [ValidateNotNullOrEmpty()]
     [string]$ApiKey = $Script:emby_api_key,
     [ValidateNotNullOrEmpty()]
@@ -10,10 +10,10 @@ function Start-EmbyScheduledTask {
     [switch]$WaitForCompletion
   )
   $tasks = Invoke-RestMethod "${Server}/emby/ScheduledTasks?api_key=${ApiKey}"
-  $task = $tasks | Where-Object Name -eq $TaskName
+  $task = $tasks | Where-Object Name -EQ $TaskName
   if ($null -ne $task) {
     $id = $task.Id
-    while ($task.State -ne "Idle") {
+    while ($task.State -ne 'Idle') {
       Start-Sleep -Seconds 10
       $task = Invoke-RestMethod "${Server}/emby/ScheduledTasks/${id}?api_key=${ApiKey}"
     }
@@ -22,7 +22,7 @@ function Start-EmbyScheduledTask {
       do {
         Start-Sleep -Seconds 10
         $task = Invoke-RestMethod "${Server}/emby/ScheduledTasks/${id}?api_key=${ApiKey}"
-      } while ($task.State -ne "Idle")
+      } while ($task.State -ne 'Idle')
     }
   }
   else {

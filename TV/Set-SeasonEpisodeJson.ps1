@@ -8,27 +8,27 @@ function Set-SeasonEpisodeJson {
 
     [int]$SeasonNumber = 99,
 
-    [string]$MetadataFolder = "\\CRUCIBLE\Metadata\metadata\People",
+    [string]$MetadataFolder = '\\CRUCIBLE\Metadata\metadata\People',
 
     [switch]$NoReleaseDate
   )
-  Get-ChildItem -LiteralPath $SourceFolder -Filter "*.mkv" | ForEach-Object {
+  Get-ChildItem -LiteralPath $SourceFolder -Filter '*.mkv' | ForEach-Object {
     $params = @{
-      PathToEpisode  = $_.FullName
+      InputFile      = $_.FullName
       MetadataFolder = $MetadataFolder
       ShowName       = $ShowName
       SeasonNumber   = $SeasonNumber
     }
     Set-EpisodeJson @params -NoReleaseDate:$NoReleaseDate
   }
-  $output = Join-Path $SourceFolder "season.json"
+  $output = Join-Path $SourceFolder 'season.json'
   if (Test-Path $output) {
     $seasonjson = Read-SeasonJson -Path $output
   }
   else {
     $seasonjson = [JsonMetadata.Models.JsonSeason]::new()
   }
-  $episode1 = Get-ChildItem -LiteralPath $SourceFolder -Filter "*.json" |
+  $episode1 = Get-ChildItem -LiteralPath $SourceFolder -Filter '*.json' |
     Select-Object -First 1 |
     ForEach-Object { Read-EpisodeJson -Path $_.FullName }
   $seasonjson.lockdata = $true
