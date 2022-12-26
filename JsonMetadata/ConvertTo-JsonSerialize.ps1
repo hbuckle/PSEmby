@@ -7,7 +7,7 @@ function ConvertTo-JsonSerialize {
   $options.WriteIndented = $true
   $options.Encoder = [System.Text.Encodings.Web.JavaScriptEncoder]::UnsafeRelaxedJsonEscaping
   $options.Converters.Add(
-    [JsonMetadata.Models.DateTimeConverter]::new("yyyy-MM-dd")
+    [JsonMetadata.Models.DateTimeConverter]::new('yyyy-MM-dd')
   )
   $json = [System.Text.Json.JsonSerializer]::Serialize($InputObject, $InputObject.GetType(), $options)
   Write-Output $json
