@@ -26,6 +26,6 @@ function Start-EmbyScheduledTask {
     }
   }
   else {
-    throw "Task $TaskName not found"
+    throw "Task ${TaskName} not found"
   }
 }

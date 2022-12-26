@@ -8,7 +8,7 @@ function Update-EmbyPerson {
     [int[]]$Id
   )
   if (!$PSBoundParameters.ContainsKey('Id')) {
-    $Id = Get-EmbyPeople -Server $Server -ApiKey $ApiKey | Select-Object -ExpandProperty 'Id'
+    $Id = Get-EmbyPerson -Server $Server -ApiKey $ApiKey | Select-Object -ExpandProperty 'Id'
   }
   $count = 1
   foreach ($item in $Id) {

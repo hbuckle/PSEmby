@@ -4,9 +4,7 @@
   PowerShellVersion  = '6.0'
   GUID               = '7a62f737-f452-4bc9-a289-d15a51f611d8'
   Author             = 'HBuckle'
-  RequiredModules    = @(
-    'Configuration'
-  )
+  RequiredModules    = @()
   RequiredAssemblies = @(
     '.\lib\AngleSharp.dll',
     '.\lib\JsonMetadata.dll',
@@ -18,11 +16,11 @@
     'Convert-Video',
     'ConvertFrom-JsonSerialize',
     'ConvertTo-JsonSerialize',
-    'Copy-FileName',
     'Export-BRSubs',
     'Export-ForcedSubs',
     'Export-MediaMonkeyPlaylist',
     'Export-Pgc',
+    'Export-RPU',
     'Find-EmbyItem',
     'Find-Film',
     'Find-TvShow',
@@ -32,7 +30,6 @@
     'Get-DoviInfo',
     'Get-DVDAudioDelay',
     'Get-Eac3toPlaylist',
-    'Get-EmbyPeople',
     'Get-EmbyPerson',
     'Get-EpisodeDescriptionNetflix',
     'Get-FileSafeName',
@@ -40,10 +37,8 @@
     'Get-FilmCredits',
     'Get-FilmDescription',
     'Get-FilmMissingDataReport',
-    'Get-Gcd',
     'Get-MediaInfo',
     'Get-MkvToolnixOption',
-    'Get-PersonFolder',
     'Get-Sar',
     'Get-TitleCaseString',
     'Get-TmdbPerson',
@@ -72,14 +67,16 @@
     'Save-YouTubePlaylist',
     'Select-ItemFromList',
     'Set-DbPersonPath',
-    'Set-EmbyPerson',
     'Set-EpisodeJson',
     'Set-FilmJson',
     'Set-MkvChapterName',
+    'Set-MkvProperties',
     'Set-OggChapterName',
     'Set-PersonJson',
     'Set-SeasonEpisodeJson',
     'Set-SeasonEpisodeName',
+    'Set-SeasonJson',
+    'Set-SeriesJson',
     'Start-EmbyScheduledTask',
     'Update-EmbyPerson',
     'Update-FilmJson',
