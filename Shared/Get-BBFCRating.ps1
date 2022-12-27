@@ -29,7 +29,7 @@ function Get-BBFCRating {
         page  = $page
       }
     } | ConvertTo-Json -Depth 99 -Compress
-    $response = Invoke-RestMethod -Uri "https://www.bbfc.co.uk/graphql" -Body $body -ContentType "application/json" -Method Post
+    $response = Invoke-RestMethod -Uri 'https://www.bbfc.co.uk/graphql' -Body $body -ContentType 'application/json' -Method Post
     $results += $response.data.search.results
     if ($response.data.search.results.Count -eq 0) {
       $more = $false
@@ -39,10 +39,11 @@ function Get-BBFCRating {
     }
   } while ($more)
 
-  $choice = Select-ItemFromList -List $results -Properties @("title", "date", "type", "classification") -Title "Rating"
-  $rating = ""
-  if ($null -ne $choice) {
-    $rating = "GB-$($choice.classification)"
+  $selection = $results | Select-Object title, date, type, classification |
+    Out-ConsoleGridView -OutputMode Single
+  $rating = ''
+  if ($null -ne $selection) {
+    $rating = "GB-$($selection.classification)"
   }
   Write-Output $rating
 }

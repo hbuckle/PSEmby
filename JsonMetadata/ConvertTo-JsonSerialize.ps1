@@ -9,6 +9,9 @@ function ConvertTo-JsonSerialize {
   $options.Converters.Add(
     [JsonMetadata.Models.DateTimeConverter]::new('yyyy-MM-dd')
   )
+  $options.Converters.Add(
+    [JsonMetadata.Models.NullStringConverter]::new()
+  )
   $json = [System.Text.Json.JsonSerializer]::Serialize($InputObject, $InputObject.GetType(), $options)
   Write-Output $json
 }

@@ -4,12 +4,10 @@
   PowerShellVersion  = '6.0'
   GUID               = '7a62f737-f452-4bc9-a289-d15a51f611d8'
   Author             = 'HBuckle'
-  RequiredModules    = @()
-  RequiredAssemblies = @(
-    '.\lib\AngleSharp.dll',
-    '.\lib\JsonMetadata.dll',
-    '.\lib\System.Data.SQLite.dll'
+  RequiredModules    = @(
+    'Microsoft.PowerShell.ConsoleGuiTools'
   )
+  RequiredAssemblies = @()
   FunctionsToExport  = @(
     'Convert-TvSeasonBr',
     'Convert-TvSeasonDvd',
@@ -20,9 +18,9 @@
     'Export-ForcedSubs',
     'Export-MediaMonkeyPlaylist',
     'Export-Pgc',
-    'Export-RPU',
+    'Export-DoviRpu',
     'Find-EmbyItem',
-    'Find-Film',
+    'Find-TmdbFilm',
     'Find-TvShow',
     'Get-BBFCRating',
     'Get-BDMVIndex',
@@ -33,14 +31,14 @@
     'Get-EmbyPerson',
     'Get-EpisodeDescriptionNetflix',
     'Get-FileSafeName',
-    'Get-Film',
-    'Get-FilmCredits',
     'Get-FilmDescription',
     'Get-FilmMissingDataReport',
     'Get-MediaInfo',
     'Get-MkvToolnixOption',
     'Get-Sar',
     'Get-TitleCaseString',
+    'Get-TmdbFilm',
+    'Get-TmdbFilmCredits',
     'Get-TmdbPerson',
     'Get-TvEpisode',
     'Get-TvSeason',
@@ -59,27 +57,24 @@
     'Read-PersonJson',
     'Read-SeasonJson',
     'Read-SeriesJson',
-    'Remove-MissingPeople',
     'Save-BRPlaylist',
     'Save-ChapterImage',
     'Save-DVDPlaylist',
     'Save-SeasonChapterImage',
     'Save-YouTubePlaylist',
     'Select-ItemFromList',
-    'Set-DbPersonPath',
     'Set-EpisodeJson',
     'Set-FilmJson',
+    'Set-FilmJson2',
     'Set-MkvChapterName',
     'Set-MkvProperties',
     'Set-OggChapterName',
-    'Set-PersonJson',
     'Set-SeasonEpisodeJson',
     'Set-SeasonEpisodeName',
     'Set-SeasonJson',
     'Set-SeriesJson',
     'Start-EmbyScheduledTask',
     'Update-EmbyPerson',
-    'Update-FilmJson',
-    'Update-TmdbPeople'
+    'Update-FilmJson'
   )
 }
