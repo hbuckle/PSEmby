@@ -5,8 +5,8 @@ function Get-DoviInfo {
   $item = Get-Item $InputFile
   $rpu = New-TemporaryFile | Select-Object -ExpandProperty FullName
   if ($item.Extension -eq '.mkv') {
-    $video_info = Get-VideoInfo -InputFile $InputFile
-    $side_data = $video_info.streams[0].side_data_list | Where-Object side_data_type -EQ 'DOVI configuration record'
+    $ffprobe = Get-Ffprobe -InputFile $InputFile
+    $side_data = $ffprobe.streams[0].side_data_list | Where-Object side_data_type -EQ 'DOVI configuration record'
     if ($null -ne $side_data) {
       $property = @{
         Profile              = $side_data.dv_profile

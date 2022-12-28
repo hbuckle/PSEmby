@@ -4,8 +4,8 @@ function Save-ChapterImage {
     [string]$InputFile,
     [string]$OutputPath = ((Get-Item $InputFile).DirectoryName + '\Chapters\' + (Get-Item $InputFile).BaseName)
   )
-  $info = Get-VideoInfo -InputFile $InputFile
-  if ($info['chapters'].Count -gt 0) {
+  $ffprobe = Get-Ffprobe -InputFile $InputFile
+  if ($ffprobe['chapters'].Count -gt 0) {
     if (-not(Test-Path $OutputPath)) {
       $null = New-Item $OutputPath -ItemType Directory
     }
@@ -18,12 +18,12 @@ function Save-ChapterImage {
       $null = New-Item $parent_ignore -ItemType File
     }
   }
-  foreach ($chapter in $info['chapters']) {
+  foreach ($chapter in $ffprobe['chapters']) {
     $time = $chapter['start_time']
     # $name = $chapter["tags"]["title"]
     $output = Join-Path $OutputPath "${time}.jpg"
     if (-not(Test-Path $output)) {
-      $video = $info['streams'] | Where-Object { $_['codec_type'] -eq 'video' }
+      $video = $ffprobe['streams'] | Where-Object { $_['codec_type'] -eq 'video' }
       $hdr = $video['color_space'] -match 'bt2020'
       $sar = $video['sample_aspect_ratio']
       $commands = @(

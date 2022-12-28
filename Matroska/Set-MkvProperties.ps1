@@ -14,7 +14,7 @@ function Set-MkvProperties {
       }
 
       $mediainfo = Get-MediaInfo -InputFile $file.FullName -AsHashtable
-      $ffprobe = Get-VideoInfo -InputFile $file.FullName
+      $ffprobe = Get-Ffprobe -InputFile $file.FullName
       $video = $mediainfo.media.track | Where-Object { $_.'@type' -eq 'Video' }
       [object[]]$audio = $mediainfo.media.track | Where-Object { $_.'@type' -eq 'Audio' }
       [object[]]$text = $mediainfo.media.track | Where-Object { $_.'@type' -eq 'Text' }
@@ -22,7 +22,6 @@ function Set-MkvProperties {
 
       $videoName = Get-MkvVideoName -Track $video -InputFile $file.FullName
       $null = & mkvpropedit --edit track:v1 --set "name=${videoName}" --set language=und $file.FullName
-      Write-Host $videoName
 
       for ($i = 0; $i -lt $audio.Count; $i++) {
         $mediaInfoTrack = $audio[$i]
