@@ -1,13 +1,16 @@
 function Import-SeriesJson {
   [CmdletBinding()]
+  [OutputType([JsonMetadata.Models.JsonSeries])]
   param (
-    [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
-    [string]$Folder
+    [Parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [string]$InputFolder
   )
+  $output = Join-Path $InputFolder 'tvshow.json'
   do {
-    if (Test-Path "$Folder\tvshow.json") {
-      return (Read-SeriesJson -Path "$Folder\tvshow.json")
+    if (Test-Path $output) {
+      return (Read-SeriesJson -Path $output)
     }
-    $Folder = Split-Path $Folder
-  } while (Test-Path $Folder)
+    $InputFolder = Split-Path $InputFolder
+  } while (Test-Path $InputFolder)
 }
