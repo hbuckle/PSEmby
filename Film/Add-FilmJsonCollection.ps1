@@ -1,4 +1,4 @@
-function Add-FilmJsonCollections {
+function Add-FilmJsonCollection {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true, ValueFromPipeline = $true)]

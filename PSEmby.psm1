@@ -27,3 +27,7 @@ do {
   }
 }
 while ($typeerror.Count -gt 0)
+
+Get-ChildItem function:\ | Where-Object { $_.Source -eq 'PSEmby' } | ForEach-Object {
+  Write-Host $_.Name
+}
