@@ -20,7 +20,7 @@ function Get-FilmDescription {
   $parser = [AngleSharp.Html.Parser.HtmlParser]::new()
   $reviewpage = Invoke-RestMethod $filmuri
   $reviewdocument = $parser.ParseDocument($reviewpage)
-  $review = $reviewdocument.GetElementById('show-review-review-region').GetElementsByClassName('editor-content').TextContent.Trim()
+  $review = $reviewdocument.GetElementById('show-review-review-region')?.GetElementsByClassName('editor-content')?.TextContent?.Trim()
   Write-Host 'Review:'
   Write-Host
   Write-Host $review
