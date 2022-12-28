@@ -6,8 +6,8 @@ function Import-SeriesJson {
     [ValidateNotNullOrEmpty()]
     [string]$InputFolder
   )
-  $output = Join-Path $InputFolder 'tvshow.json'
   do {
+    $output = Join-Path $InputFolder 'tvshow.json'
     if (Test-Path $output) {
       return (Read-SeriesJson -Path $output)
     }

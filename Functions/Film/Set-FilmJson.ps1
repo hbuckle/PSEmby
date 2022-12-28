@@ -47,9 +47,9 @@ function Set-FilmJson {
       $jsonMovie.studios = @()
       $jsonMovie.tags = @()
       $jsonMovie.people.Clear()
-      $credits.crew | Where-Object job -EQ 'Director' | Add-FilmJsonPerson -Type Director -FilmJson $jsonMovie
-      $credits.crew | Where-Object job -In 'Writer', 'Screenplay' | Select-Object -Unique | Add-FilmJsonPerson -Type Writer -FilmJson $jsonMovie
-      $credits.cast | Add-FilmJsonPerson -Type Actor -FilmJson $jsonMovie
+      $credits.crew | Where-Object job -EQ 'Director' | Add-JsonObjectPerson -Type Director -JsonObject $jsonMovie
+      $credits.crew | Where-Object job -In 'Writer', 'Screenplay' | Select-Object -Unique | Add-JsonObjectPerson -Type Writer -JsonObject $jsonMovie
+      $credits.cast | Add-JsonObjectPerson -Type Actor -JsonObject $jsonMovie
 
       if ($PSBoundParameters.ContainsKey('Description')) {
         $jsonMovie.overview = $Description
@@ -60,13 +60,13 @@ function Set-FilmJson {
 
       ConvertTo-JsonSerialize -InputObject $jsonMovie | Set-Content $output -NoNewline
 
-      Add-FilmJsonCollections -InputFile $file.FullName
+      Add-FilmJsonCollection -InputFile $file.FullName
     }
   }
   end {}
 }
 
-function Add-FilmJsonPerson {
+function Add-JsonObjectPerson {
   param (
     [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
     [object[]]$Person,
@@ -74,7 +74,7 @@ function Add-FilmJsonPerson {
     [ValidateSet('Actor', 'Director', 'Writer')]
     [string]$Type,
 
-    [JsonMetadata.Models.JsonMovie]$FilmJson
+    [JsonMetadata.Models.JsonObject]$JsonObject
   )
   begin {}
   process {
@@ -88,10 +88,10 @@ function Add-FilmJsonPerson {
       if ($Type -eq 'Actor') {
         $jsonPerson.role = $item.character
         if ($jsonPerson.role -in 'Composer', 'Director', 'Guest star', 'Producer', 'Writer') {
-          Write-Warning "$($FilmJson.title) - $($jsonPerson.name) has role $($jsonPerson.role)"
+          Write-Warning "$($JsonObject.title) - $($jsonPerson.name) has role $($jsonPerson.role)"
         }
       }
-      $FilmJson.people.Add($jsonPerson)
+      $JsonObject.people.Add($jsonPerson)
     }
   }
   end {}

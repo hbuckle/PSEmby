@@ -19,7 +19,7 @@ function Set-SeasonJson {
 
       $jsonSeries = Import-SeriesJson $folder.FullName
       if ($null -eq $jsonSeries) {
-        Write-Error "File '$($folder.Parent.Name)\tvshow.json' was not found"
+        Write-Error "File '$($folder.Parent.FullName)\tvshow.json' was not found"
       }
 
       if ($folder.Name -eq 'Specials') {

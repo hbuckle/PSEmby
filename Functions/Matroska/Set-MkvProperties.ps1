@@ -15,8 +15,8 @@ function Set-MkvProperties {
       $output = [System.IO.Path]::ChangeExtension($file.FullName, '.json')
 
       if (Test-Path $output) {
-        $jsonMovie = Read-FilmJson -Path $output
-        $null = & mkvpropedit --set "title=$($jsonMovie.title)" $file.FullName
+        $json = Get-Content $output | ConvertFrom-Json
+        $null = & mkvpropedit --set "title=$($json.title)" $file.FullName
       }
 
       $mediainfo = Get-MediaInfo -InputFile $file.FullName -AsHashtable

@@ -9,6 +9,7 @@
   )
   RequiredAssemblies = @()
   FunctionsToExport  = @(
+    'Add-EmbyFilm',
     'Add-FilmJsonCollection',
     'ConvertFrom-JsonSerialize',
     'ConvertTo-JsonSerialize',
