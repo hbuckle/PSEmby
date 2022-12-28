@@ -1,5 +1,6 @@
 function Read-FilmJson {
   [CmdletBinding()]
+  [OutputType([JsonMetadata.Models.JsonMovie])]
   param (
     [string]$Path
   )

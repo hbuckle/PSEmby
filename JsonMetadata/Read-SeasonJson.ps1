@@ -1,5 +1,6 @@
 function Read-SeasonJson {
   [CmdletBinding()]
+  [OutputType([JsonMetadata.Models.JsonSeason])]
   param (
     [string]$Path
   )

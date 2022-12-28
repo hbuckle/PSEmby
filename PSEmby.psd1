@@ -9,6 +9,7 @@
   )
   RequiredAssemblies = @()
   FunctionsToExport  = @(
+    'Add-FilmJsonCollections',
     'Convert-TvSeasonBr',
     'Convert-TvSeasonDvd',
     'Convert-Video',
@@ -21,7 +22,7 @@
     'Export-DoviRpu',
     'Find-EmbyItem',
     'Find-TmdbFilm',
-    'Find-TvShow',
+    'Find-TmdbTvShow',
     'Get-BBFCRating',
     'Get-BDMVIndex',
     'Get-DarAdjustment',
@@ -40,9 +41,10 @@
     'Get-TmdbFilm',
     'Get-TmdbFilmCredits',
     'Get-TmdbPerson',
-    'Get-TvEpisode',
-    'Get-TvSeason',
-    'Get-TvShow',
+    'Get-TmdbTvShow',
+    'Get-TmdbTvEpisode',
+    'Get-TmdbTvEpisodeGroup',
+    'Get-TmdbTvSeason',
     'Get-VideoInfo',
     'Get-VStripPlaylist',
     'Import-SeriesJson',

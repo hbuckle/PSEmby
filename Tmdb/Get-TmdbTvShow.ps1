@@ -8,7 +8,7 @@ function Get-TmdbTvShow {
   begin {}
   process {
     foreach ($item in $Id) {
-      Invoke-Tmdb -Path "/tv/${item}"
+      Invoke-Tmdb -Path "/tv/${item}" -Query @{append_to_response = 'episode_groups,external_ids'}
     }
   }
   end {}

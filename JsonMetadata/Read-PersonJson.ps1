@@ -1,5 +1,6 @@
 function Read-PersonJson {
   [CmdletBinding()]
+  [OutputType([JsonMetadata.Models.JsonPerson])]
   param (
     [string]$Path
   )

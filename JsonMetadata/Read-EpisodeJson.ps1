@@ -1,5 +1,6 @@
 function Read-EpisodeJson {
   [CmdletBinding()]
+  [OutputType([JsonMetadata.Models.JsonEpisode])]
   param (
     [string]$Path
   )
