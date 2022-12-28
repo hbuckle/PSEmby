@@ -12,6 +12,12 @@ function Set-MkvProperties {
       if ($file.Extension -ne '.mkv') {
         Write-Error "Input file '$($file.FullName)' was not in the correct format"
       }
+      $output = [System.IO.Path]::ChangeExtension($file.FullName, '.json')
+
+      if (Test-Path $output) {
+        $jsonMovie = Read-FilmJson -Path $output
+        $null = & mkvpropedit --set "title=$($jsonMovie.title)" $file.FullName
+      }
 
       $mediainfo = Get-MediaInfo -InputFile $file.FullName -AsHashtable
       $ffprobe = Get-Ffprobe -InputFile $file.FullName
