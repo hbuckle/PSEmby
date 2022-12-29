@@ -17,7 +17,10 @@ function Get-EmbyPerson {
     [string]$Name,
 
     [Parameter(ParameterSetName = 'Id')]
-    [string]$Id
+    [string]$Id,
+
+    [Parameter(ParameterSetName = 'TmdbId')]
+    [Int64]$TmdbId
   )
   $builder = [System.UriBuilder]::new($Server)
   if ($PSCmdlet.ParameterSetName -eq 'Name') {
@@ -30,6 +33,12 @@ function Get-EmbyPerson {
     $builder.Path = "Users/${ApiKey}/Items/${Id}"
     $builder.Query = "api_key=${ApiKey}"
     Invoke-RestMethod $builder.ToString() -Method 'Get' -ContentType 'application/json'
+  }
+  elseif ($PSCmdlet.ParameterSetName -eq 'TmdbId') {
+    $builder.Path = "Users/${ApiKey}/Items"
+    $builder.Query = "api_key=${ApiKey}&Recursive=true&AnyProviderIdEquals=Tmdb.${TmdbId}&IncludeItemTypes=Person"
+    Invoke-RestMethod $builder.ToString() -Method 'Get' -ContentType 'application/json' |
+      Select-Object -ExpandProperty Items | Write-Output
   }
   else {
     $builder.Path = 'Persons'
