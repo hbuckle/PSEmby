@@ -14,6 +14,6 @@ function Invoke-Tmdb {
     $queryStrings += "$($_.Key)=$($_.Value)"
   }
   $builder.Query = $queryStrings -join '&'
-  $response = Invoke-RestMethod $builder.ToString() -Method $Method
+  $response = Invoke-RestMethod $builder.ToString() -Method $Method -RetryIntervalSec 10 -MaximumRetryCount 3
   $response | Write-Output
 }

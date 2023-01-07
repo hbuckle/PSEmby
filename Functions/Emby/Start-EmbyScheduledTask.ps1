@@ -2,30 +2,27 @@ function Start-EmbyScheduledTask {
   [CmdletBinding()]
   param (
     [ValidateNotNullOrEmpty()]
-    [string]$Server = 'https://emby.crucible.org.uk',
-    [ValidateNotNullOrEmpty()]
-    [string]$ApiKey = $Script:emby_api_key,
-    [ValidateNotNullOrEmpty()]
-    [string]$TaskName,
-    [switch]$WaitForCompletion
+    [string]$Name,
+
+    [switch]$Wait
   )
-  $tasks = Invoke-RestMethod "${Server}/emby/ScheduledTasks?api_key=${ApiKey}"
-  $task = $tasks | Where-Object Name -EQ $TaskName
+  $tasks = Invoke-Emby -Path 'ScheduledTasks'
+  $task = $tasks | Where-Object Name -EQ $Name
   if ($null -ne $task) {
     $id = $task.Id
     while ($task.State -ne 'Idle') {
-      Start-Sleep -Seconds 10
-      $task = Invoke-RestMethod "${Server}/emby/ScheduledTasks/${id}?api_key=${ApiKey}"
+      Start-Sleep -Seconds 5
+      $task = Invoke-Emby -Path "ScheduledTasks/${id}"
     }
-    $null = Invoke-RestMethod "${Server}/emby/ScheduledTasks/Running/${id}?api_key=${ApiKey}" -Method Post
-    if ($WaitForCompletion) {
+    $null = Invoke-Emby -Path "ScheduledTasks/Running/${id}" -Method Post
+    if ($Wait.ToBool()) {
       do {
-        Start-Sleep -Seconds 10
-        $task = Invoke-RestMethod "${Server}/emby/ScheduledTasks/${id}?api_key=${ApiKey}"
+        Start-Sleep -Seconds 5
+        $task = Invoke-Emby -Path "ScheduledTasks/${id}"
       } while ($task.State -ne 'Idle')
     }
   }
   else {
-    throw "Task ${TaskName} not found"
+    Write-Error "Task ${Name} not found"
   }
 }

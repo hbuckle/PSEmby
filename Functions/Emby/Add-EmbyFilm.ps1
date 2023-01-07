@@ -13,8 +13,9 @@ function Add-EmbyFilm {
   Set-FilmJson -InputFile $file.FullName -TmdbId $tmdbFilm.id -Description $description -ParentalRating $rating
   Set-MkvProperties -InputFile $file.FullName
   Save-ChapterImage -InputFile $file.FullName
-  Start-EmbyScheduledTask -TaskName 'Scan media library' -WaitForCompletion
+  Start-EmbyScheduledTask -Name 'Scan media library' -Wait
   $output = [System.IO.Path]::ChangeExtension($file.FullName, '.json')
   $filmJson = Read-FilmJson -Path $output
   $filmJson.people | Where-Object id -NE 0 | Update-EmbyPerson
+  Start-EmbyScheduledTask -Name 'Set chapter paths'
 }

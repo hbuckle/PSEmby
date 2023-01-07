@@ -4,7 +4,7 @@ function Read-FilmJson {
   param (
     [string]$Path
   )
-  $type = [JsonMetadata.Models.JsonMovie]::new().GetType()
+  $type = [JsonMetadata.Models.JsonMovie]
   $movie = ConvertFrom-JsonSerialize -Path $Path -Type $type
   return $movie
 }

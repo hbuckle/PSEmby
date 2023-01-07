@@ -1,18 +1,6 @@
 function Get-EmbyPerson {
   [CmdletBinding(DefaultParameterSetName = 'List')]
   param (
-    [ValidateNotNullOrEmpty()]
-    [Parameter(ParameterSetName = 'Name')]
-    [Parameter(ParameterSetName = 'Id')]
-    [Parameter(ParameterSetName = 'List')]
-    [string]$Server = 'https://emby.crucible.org.uk',
-
-    [ValidateNotNullOrEmpty()]
-    [Parameter(ParameterSetName = 'Name')]
-    [Parameter(ParameterSetName = 'Id')]
-    [Parameter(ParameterSetName = 'List')]
-    [string]$ApiKey = $Script:emby_api_key,
-
     [Parameter(ParameterSetName = 'Name')]
     [string]$Name,
 
@@ -22,28 +10,20 @@ function Get-EmbyPerson {
     [Parameter(ParameterSetName = 'TmdbId')]
     [Int64]$TmdbId
   )
-  $builder = [System.UriBuilder]::new($Server)
   if ($PSCmdlet.ParameterSetName -eq 'Name') {
-    $builder.Path = 'emby/Search/Hints'
-    $builder.Query = "api_key=${ApiKey}&SearchTerm=${Name}&IncludePeople=true&IncludeItemTypes=Person"
-    $response = Invoke-RestMethod $builder.ToString() -Method 'Get' -ContentType 'application/json'
-    $response.SearchHints | Write-Output
+    Invoke-Emby -Path 'Items' -Query @{
+      IncludeItemTypes = 'Person'; Recursive = $true; NameStartsWith = $Name
+    } | Select-Object -ExpandProperty 'Items' | Write-Output
   }
   elseif ($PSCmdlet.ParameterSetName -eq 'Id') {
-    $builder.Path = "Users/${ApiKey}/Items/${Id}"
-    $builder.Query = "api_key=${ApiKey}"
-    Invoke-RestMethod $builder.ToString() -Method 'Get' -ContentType 'application/json'
+    Invoke-Emby -Path "Items/${Id}"
   }
   elseif ($PSCmdlet.ParameterSetName -eq 'TmdbId') {
-    $builder.Path = "Users/${ApiKey}/Items"
-    $builder.Query = "api_key=${ApiKey}&Recursive=true&AnyProviderIdEquals=Tmdb.${TmdbId}&IncludeItemTypes=Person"
-    Invoke-RestMethod $builder.ToString() -Method 'Get' -ContentType 'application/json' |
-      Select-Object -ExpandProperty Items | Write-Output
+    Invoke-Emby -Path 'Items' -Query @{
+      IncludeItemTypes = 'Person'; Recursive = $true; NameStartsWith = $Name; AnyProviderIdEquals = "Tmdb.${TmdbId}"
+    } | Select-Object -ExpandProperty 'Items' | Write-Output
   }
   else {
-    $builder.Path = 'Persons'
-    $builder.Query = "api_key=${ApiKey}"
-    $response = Invoke-RestMethod $builder.ToString() -Method 'Get' -ContentType 'application/json'
-    $response.Items | Write-Output
+    Invoke-Emby -Path 'Persons' | Select-Object -ExpandProperty 'Items' | Write-Output
   }
 }

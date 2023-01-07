@@ -3,7 +3,7 @@ function Get-DoviInfo {
     [string]$InputFile
   )
   $item = Get-Item $InputFile
-  $rpu = New-TemporaryFile | Select-Object -ExpandProperty FullName
+  $rpu = New-TemporaryFile -WhatIf:$false -Confirm:$false | Select-Object -ExpandProperty FullName
   if ($item.Extension -eq '.mkv') {
     $ffprobe = Get-Ffprobe -InputFile $InputFile
     $side_data = $ffprobe.streams[0].side_data_list | Where-Object side_data_type -EQ 'DOVI configuration record'
@@ -27,5 +27,5 @@ function Get-DoviInfo {
       New-Object -TypeName PSObject -Property $property | Write-Output
     }
   }
-  Remove-Item $rpu -Force
+  Remove-Item $rpu -Force -WhatIf:$false -Confirm:$false
 }

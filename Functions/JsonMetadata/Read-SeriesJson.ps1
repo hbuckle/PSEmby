@@ -4,7 +4,7 @@ function Read-SeriesJson {
   param (
     [string]$Path
   )
-  $type = [JsonMetadata.Models.JsonSeries]::new().GetType()
+  $type = [JsonMetadata.Models.JsonSeries]
   $series = ConvertFrom-JsonSerialize -Path $Path -Type $type
   return $series
 }

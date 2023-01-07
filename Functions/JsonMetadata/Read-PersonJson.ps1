@@ -4,7 +4,7 @@ function Read-PersonJson {
   param (
     [string]$Path
   )
-  $type = [JsonMetadata.Models.JsonPerson]::new().GetType()
+  $type = [JsonMetadata.Models.JsonPerson]
   $person = ConvertFrom-JsonSerialize -Path $Path -Type $type
   return $person
 }
