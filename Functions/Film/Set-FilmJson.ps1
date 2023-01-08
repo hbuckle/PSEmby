@@ -1,5 +1,5 @@
 function Set-FilmJson {
-  [CmdletBinding()]
+  [CmdletBinding(SupportsShouldProcess = $true)]
   param (
     [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
     [ValidateNotNullOrEmpty()]
@@ -27,6 +27,10 @@ function Set-FilmJson {
       if (!$PSBoundParameters.ContainsKey('TmdbId') -and $null -eq $jsonMovie.tmdbid) {
         Write-Error 'TmdbId is required'
       }
+      if (!$PSBoundParameters.ContainsKey('TmdbId')) {
+        $TmdbId = $jsonMovie.tmdbid
+      }
+      Write-Progress -Activity 'Set-FilmJson' -Status $file.FullName
 
       $tmdbFilm = Get-TmdbFilm -Id $TmdbId
       $credits = Get-TmdbFilmCredits -Id $tmdbFilm.id
@@ -58,10 +62,19 @@ function Set-FilmJson {
         $jsonMovie.parentalrating = $ParentalRating
       }
 
-      ConvertTo-JsonSerialize -InputObject $jsonMovie | Set-Content $output -NoNewline
+      $outputString = ConvertTo-JsonSerialize -InputObject $jsonMovie
+      $hasDifference = $false
+      $diffResult = Compare-String -ReferenceString ([System.IO.File]::ReadAllText($output)) -DifferenceString $outputString -Result ([ref]$hasDifference)
+      if ($hasDifference) {
+        if ($PSCmdlet.ShouldProcess("Performing the operation `"Set Content`" on target `"Path: ${output}`" with content:`n$diffResult", 'Set Content', $output)) {
+          $outputString | Set-Content $output -NoNewline
+        }
+      }
 
       Add-FilmJsonCollection -InputFile $file.FullName
     }
   }
-  end {}
+  end {
+    Write-Progress -Activity 'Set-FilmJson' -Completed
+  }
 }
