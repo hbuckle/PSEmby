@@ -1,122 +1,93 @@
 function Set-EpisodeJson {
-  [CmdletBinding()]
+  [CmdletBinding(SupportsShouldProcess = $true)]
   param (
-    [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
-    [string]$InputFile,
-    [string]$ShowName,
-    [int]$SeasonNumber = 99,
-    [string]$MetadataFolder = '\\CRUCIBLE\Metadata\metadata\People',
-    [switch]$NoReleaseDate,
-    [ValidateSet('Netflix')]
-    [string]$DescriptionSource,
-    [string]$DescriptionId
+    [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+    [ValidateNotNullOrEmpty()]
+    [string[]]$InputFile
   )
-  $file = Get-Item $InputFile
-  Write-Verbose "Set-EpisodeJson : PathToEpisode = $InputFile"
-  $output = $file.DirectoryName + '\' + $file.BaseName + '.json'
-  if (Test-Path $output) {
-    $episodedetails = Read-EpisodeJson -Path $output
-  }
-  else {
-    $episodedetails = [JsonMetadata.Models.JsonEpisode]::new()
-  }
-  $seriesjson = Import-SeriesJson -Folder $file.DirectoryName
-  if ($null -eq $seriesjson) {
-    try {
-      $show = (Get-Variable -Scope 'Script' -Name $ShowName).Value
-    }
-    catch {
-      $show = Find-TvShow -Title $ShowName
-      New-Variable -Scope 'Script' -Name $ShowName -Value $show
-    }
-    $showid = $show['id']
-  }
-  else {
-    $showid = $seriesjson.tmdbid
-  }
-  if ($SeasonNumber -eq 99) {
-    try {
-      $SeasonNumber = [int]$file.Directory.Name.Split(' ')[1]
-    }
-    catch {
-      throw 'SeasonNumber not found'
-    }
-  }
-  $show = Get-TvShow -ShowId $showid
-  $episodeId = ($file.BaseName -split ' - ')[0]
-  $episodeNumber = [int]($file.BaseName -split ' - ')[0].Remove(0, 4)
-  $episode = $null
-  if (Test-Path (Join-Path $file.DirectoryName 'tmdb.json')) {
-    $tmdb = Get-Content (Join-Path $file.DirectoryName 'tmdb.json') |
-      ConvertFrom-Json -AsHashtable -Depth 99
-    if ($null -ne $tmdb['episodegroupid']) {
-      $season = Get-TvSeason -EpisodeGroupId $tmdb['episodegroupid'] -SeasonId $tmdb['seasonid']
-      $episode = $season['episodes'] | Where-Object order -EQ ($episodeNumber - 1)
-      $episode = Get-TvEpisode -ShowId $showid -SeasonNumber $episode['season_number'] -EpisodeNumber $episode['episode_number']
-    }
-  }
-  else {
-    $tmdb = @{overrides = @{ } }
-  }
-  if ($null -eq $episode) {
-    $episode = Get-TvEpisode -ShowId $showid -SeasonNumber $SeasonNumber -EpisodeNumber $episodeNumber
-  }
-  $episodedetails.title = (Get-TitleCaseString $episode['name'])
-  $episodedetails.sorttitle = ''
-  $episodedetails.seasonnumber = $SeasonNumber
-  $episodedetails.episodenumber = $episodeNumber
-  $episodedetails.communityrating = $null
-  if ($null -eq $episodedetails.overview) {
-    $episodedetails.overview = ''
-  }
-  if (!$NoReleaseDate -and ![string]::IsNullOrEmpty($episode['air_date'])) {
-    $episodedetails.releasedate = [datetime]::ParseExact($episode['air_date'], 'yyyy-MM-dd', [System.Globalization.CultureInfo]::InvariantCulture)
-  }
-  $episodedetails.year = ([datetime]::ParseExact($episode['air_date'], 'yyyy-MM-dd', [System.Globalization.CultureInfo]::InvariantCulture)).Year
-  $episodedetails.parentalrating = $null
-  $episodedetails.customrating = ''
-  $episodedetails.imdbid = ($null -ne $episode['external_ids']['imdb_id'] ?
-    $episode['external_ids']['imdb_id'] :
-    ''
-  )
-  $episodedetails.tvdbid = ''
-  $episodedetails.genres = @()
-  $episodedetails.people = @()
-  $episodedetails.studios = @()
-  $episodedetails.tags = @()
-  $episodedetails.lockdata = $true
-  foreach ($genre in $show['genres']) {
-    $episodedetails.genres += $genre['name']
-  }
-  $directors = @()
-  $directors += $episode['crew'].Where( { $_.job -eq 'Director' })
-  foreach ($person in $directors) {
-    $episodeDirector = [JsonMetadata.Models.JsonCastCrew]::new()
-    $episodeDirector.name = $person['name']
-    $episodeDirector.type = 'Director'
-    $episodeDirector.role = ''
-    $episodeDirector.tmdbid = $person['id']
-    $tmdbperson = Get-TmdbPerson -PersonId $person.id
-    if ([string]::IsNullOrEmpty($tmdbperson['imdb_id'])) {
-      $episodeDirector.imdbid = ''
-    }
-    else {
-      $episodeDirector.imdbid = $tmdbperson['imdb_id']
-    }
-    $episodedetails.people += $episodeDirector
-  }
-  switch ($DescriptionSource) {
-    'Netflix' {
-      $description = Get-EpisodeDescriptionNetflix -Id $DescriptionId -SeasonNumber $SeasonNumber -EpisodeNumber $episodeNumber
-      $episodedetails.overview = $description
-    }
-    Default { }
-  }
-  if ($null -ne $tmdb['overrides'][$episodeId]) {
-    foreach ($property in $tmdb['overrides'][$episodeId].GetEnumerator()) {
-      $episodedetails.$($property.Key) = $property.Value
+  begin {}
+  process {
+    foreach ($item in $InputFile) {
+      $file = Get-Item $item
+      if ($file.Extension -ne '.mkv') {
+        Write-Error "Input file '$($file.FullName)' was not in the correct format"
+      }
+      $output = [System.IO.Path]::ChangeExtension($file.FullName, '.json')
+
+      if (Test-Path $output) {
+        $jsonEpisode = Read-EpisodeJson -Path $output
+        $currentString = [System.IO.File]::ReadAllText($output)
+      }
+      else {
+        $jsonEpisode = [JsonMetadata.Models.JsonEpisode]::new()
+        $currentString = '{}'
+      }
+
+      $jsonSeries = Import-SeriesJson $file.Directory.FullName
+      if ($null -eq $jsonSeries) {
+        Write-Error "File '$($file.Directory.Parent.FullName)\tvshow.json' was not found"
+      }
+
+      $jsonSeason = Read-SeasonJson (Join-Path $file.Directory.FullName 'season.json')
+
+      Write-Progress -Activity 'Set-EpisodeJson' -Status $file.FullName
+
+      if ($file.Directory.Name -eq 'Specials') {
+        # do things
+      }
+      else {
+        [int]$seasonNumber = $file.Name.Substring(1, 2)
+        [int]$episodeNumber = $file.Name.Substring(4, 2)
+        $fileName = $file.BaseName.Substring(9, $file.BaseName.Length - 9)
+        if ([string]::IsNullOrEmpty($jsonSeason.tmdbepisodegroupid)) {
+          $tmdbEpisode = Get-TmdbTvEpisode -Id $jsonSeries.tmdbid -SeasonNumber $seasonNumber -Number $episodeNumber
+        }
+        else {
+          $segments = $jsonSeason.tmdbepisodegroupid.Split('/')
+          $tmdbEpisode = Get-TmdbTvEpisode -EpisodeGroupId $segments[2] -EpisodeGroupSeasonId $segments[4] -Number $episodeNumber
+        }
+        if ([string]::IsNullOrEmpty($jsonEpisode.customfields['title'])) {
+          $jsonEpisode.title = Get-TitleCaseString $tmdbEpisode.name
+        }
+        else {
+          $jsonEpisode.title = $jsonEpisode.customfields['title']
+        }
+        $safeName = Get-FileSafeName $jsonEpisode.title
+        if ($safeName -cne $fileName) {
+          Write-Warning "Input file '$($file.FullName)' does not match name '${safeName}'"
+        }
+        $jsonEpisode.sorttitle = Get-SortTitleString $jsonEpisode.title
+        $jsonEpisode.seasonnumber = $seasonNumber
+        $jsonEpisode.episodenumber = $episodeNumber
+        $jsonEpisode.communityrating = $null
+        $jsonEpisode.releasedate = [datetime]::ParseExact(
+          $tmdbEpisode.air_date, 'yyyy-MM-dd', [System.Globalization.CultureInfo]::InvariantCulture
+        )
+        $jsonEpisode.year = $jsonEpisode.releasedate.Year
+        $jsonEpisode.parentalrating = [string]::Empty
+        $jsonEpisode.customrating = [string]::Empty
+        $jsonEpisode.tvdbid = [string]::Empty
+        $jsonEpisode.imdbid = $tmdbEpisode.external_ids.imdb_id
+        $jsonEpisode.genres = $jsonSeries.genres
+        $jsonEpisode.studios = @()
+        $jsonEpisode.tags = @()
+        $jsonEpisode.lockdata = $true
+        $jsonEpisode.people.Clear()
+        $tmdbEpisode.crew | Where-Object job -EQ 'Director' |
+          Add-JsonObjectPerson -Type Director -JsonObject $jsonEpisode
+
+        $outputString = ConvertTo-JsonSerialize -InputObject $jsonEpisode
+        $hasDifference = $false
+        $diffResult = Get-StringDiff -ReferenceString $currentString -DifferenceString $outputString -Result ([ref]$hasDifference)
+        if ($hasDifference) {
+          if ($PSCmdlet.ShouldProcess("Performing the operation `"Set Content`" on target `"Path: ${output}`" with content:`n$diffResult", 'Set Content', $output)) {
+            $outputString | Set-Content $output -NoNewline
+          }
+        }
+      }
     }
   }
-  ConvertTo-JsonSerialize -InputObject $episodedetails | Set-Content $output -Encoding utf8NoBOM -NoNewline
-  $null = & mkvpropedit --set "title=$($episodedetails.title)" $InputFile
+  end {
+    Write-Progress -Activity 'Set-EpisodeJson' -Completed
+  }
 }
