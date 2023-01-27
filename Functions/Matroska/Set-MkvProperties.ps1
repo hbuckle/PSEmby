@@ -1,5 +1,5 @@
 function Set-MkvProperties {
-  [CmdletBinding()]
+  [CmdletBinding(SupportsShouldProcess = $true)]
   param (
     [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
     [ValidateNotNullOrEmpty()]
@@ -14,39 +14,70 @@ function Set-MkvProperties {
       }
       $output = [System.IO.Path]::ChangeExtension($file.FullName, '.json')
 
+      $mkvinfo = & mkvmerge -J $file.FullName | ConvertFrom-Json -AsHashtable
+
       if (Test-Path $output) {
         $json = Get-Content $output | ConvertFrom-Json
-        $null = & mkvpropedit --set "title=$($json.title)" $file.FullName
+        if ($mkvinfo.container.properties['title'] -cne $json.title) {
+          if ($PSCmdlet.ShouldProcess($file.FullName, "Set title = $($json.title)")) {
+            $null = & mkvpropedit --set "title=$($json.title)" $file.FullName
+          }
+        }
       }
 
       $mediainfo = Get-MediaInfo -InputFile $file.FullName -AsHashtable
       $ffprobe = Get-Ffprobe -InputFile $file.FullName
       $video = $mediainfo.media.track | Where-Object { $_.'@type' -eq 'Video' }
-      [object[]]$audio = $mediainfo.media.track | Where-Object { $_.'@type' -eq 'Audio' }
-      [object[]]$text = $mediainfo.media.track | Where-Object { $_.'@type' -eq 'Text' }
-      [object[]]$audioStreams = $ffprobe.streams | Where-Object { $_.codec_type -eq 'audio' }
+      $audio = @(
+        $mediainfo.media.track | Where-Object { $_.'@type' -eq 'Audio' }
+      )
+      $text = @(
+        $mediainfo.media.track | Where-Object { $_.'@type' -eq 'Text' }
+      )
+      $audioStreams = @(
+        $ffprobe.streams | Where-Object { $_.codec_type -eq 'audio' }
+      )
 
       $videoName = Get-MkvVideoName -Track $video -InputFile $file.FullName
-      $null = & mkvpropedit --edit track:v1 --set "name=${videoName}" --set language=und $file.FullName
+      if ($mkvinfo.tracks[0].properties['track_name'] -cne $videoName -or $mkvinfo.tracks[0].properties['language'] -cne 'und') {
+        if ($PSCmdlet.ShouldProcess($file.FullName, "Set video name = ${videoName}, language = und")) {
+          $null = & mkvpropedit --edit track:v1 --set "name=${videoName}" --set language=und $file.FullName
+        }
+      }
 
       for ($i = 0; $i -lt $audio.Count; $i++) {
+        $flag_default = $i -eq 0
         $mediaInfoTrack = $audio[$i]
-        if ($mediaInfoTrack['Title'] -match 'Commentary') {
-          $null = & mkvpropedit --edit "track:=$($mediaInfoTrack.UniqueID)" --set flag-commentary=True --set flag-default=False $file.FullName
+        $mkvinfoTrack = $mkvinfo.tracks | Where-Object { $_.properties.uid -eq $mediaInfoTrack.UniqueID }
+        if ($mediaInfoTrack['Title'] -match 'Commentary' -and !$mkvinfoTrack.properties['flag_commentary']) {
+          if ($PSCmdlet.ShouldProcess($file.FullName, "Set track $($mediaInfoTrack.UniqueID) commentary flag = True")) {
+            $null = & mkvpropedit --edit "track:=$($mediaInfoTrack.UniqueID)" --set flag-commentary=True --set flag-default=False $file.FullName
+          }
           continue
         }
         $audioName = Get-MkvAudioName -MediaInfoTrack $mediaInfoTrack -FfprobeTrack $audioStreams[$i]
-        $flag_default = $i -eq 0
-        $null = & mkvpropedit --edit "track:=$($mediaInfoTrack.UniqueID)" --set "name=${audioName}" --set "flag-default=$($flag_default.ToString())" $file.FullName
-      }
-
-      foreach ($track in $text) {
-        if ($track['Forced'] -eq 'Yes') {
-          $null = & mkvpropedit --edit "track:=$($track.UniqueID)" --set flag-forced=True --set flag-default=True $file.FullName
+        if ($mkvinfoTrack.properties['track_name'] -cne $audioName -or $mkvinfoTrack.properties['default_track'] -ne $flag_default) {
+          if ($PSCmdlet.ShouldProcess($file.FullName, "Set track $($mediaInfoTrack.UniqueID) name = ${audioName}, default flag = ${flag_default}")) {
+            $null = & mkvpropedit --edit "track:=$($mediaInfoTrack.UniqueID)" --set "name=${audioName}" --set "flag-default=$($flag_default.ToString())" $file.FullName
+          }
         }
       }
 
-      $null = & mkvpropedit $file.FullName --tags all:
+      for ($i = 0; $i -lt $text.Count; $i++) {
+        $mediaInfoTrack = $text[$i]
+        $mkvinfoTrack = $mkvinfo.tracks | Where-Object { $_.properties.uid -eq $mediaInfoTrack.UniqueID }
+        if ($mediaInfoTrack['Forced'] -eq 'Yes' -and !$mkvinfoTrack.properties['default_track']) {
+          if ($PSCmdlet.ShouldProcess($file.FullName, "Set track $($mediaInfoTrack.UniqueID) forced flag = True, default flag = True")) {
+            $null = & mkvpropedit --edit "track:=$($track.UniqueID)" --set flag-forced=True --set flag-default=True $file.FullName
+          }
+        }
+      }
+
+      if ($mkvinfo.global_tags.Count -gt 0 -or $mkvinfo.track_tags.Count -gt 0) {
+        if ($PSCmdlet.ShouldProcess($file.FullName, 'Clear all tags')) {
+          $null = & mkvpropedit $file.FullName --tags all:
+        }
+      }
 
       Set-MkvChapterName -InputFile $file.FullName
     }
