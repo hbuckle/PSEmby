@@ -9,7 +9,7 @@ function Set-MkvChapterName {
   $tempfile = New-TemporaryFile
   & mkvextract $file.FullName chapters $tempfile.FullName
   if ((Get-Item $tempfile.FullName).Length -gt 0) {
-    $chapters = [Mkv.Chapters]::Load($tempfile.FullName)
+    $chapters = [PSEmby.MkvChapters]::Load($tempfile.FullName)
     foreach ($edition in $chapters.EditionEntry) {
       $count = 1
       $hiddencount = 1

@@ -35,6 +35,7 @@
     'Get-TmdbTvSeason',
     'Get-TmdbTvShow',
     'Import-SeriesJson',
+    'Invoke-Emby',
     'Invoke-Process',
     'Invoke-Tmdb',
     'Optimize-JPEG',
@@ -52,7 +53,6 @@
     'Set-SeasonJson',
     'Set-SeriesJson',
     'Start-EmbyScheduledTask',
-    'Update-EmbyPerson',
-    'Update-FilmJson'
+    'Update-EmbyPerson'
   )
 }

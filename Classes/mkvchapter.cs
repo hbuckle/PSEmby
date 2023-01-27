@@ -4,41 +4,35 @@ using System.Xml.Serialization;
 using System.Text;
 using System.IO;
 
-namespace Mkv {
+namespace PSEmby {
   [XmlTypeAttribute(AnonymousType = true)]
   [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
-  public class Chapters
-  {
+  public class MkvChapters {
     [XmlElementAttribute("EditionEntry")]
     public EditionEntry[] EditionEntry { get; set; }
 
-    public void Save(string Path)
-      {
-        var serializer = new XmlSerializer(typeof(Chapters), "");
-        var xmlwritersettings = new XmlWriterSettings();
-        xmlwritersettings.Indent = true;
-        xmlwritersettings.NewLineOnAttributes = true;
-        xmlwritersettings.Encoding = new UTF8Encoding(false);
-        var namespaces = new XmlSerializerNamespaces();
-        namespaces.Add("", "");
-        using (var writer = XmlWriter.Create(Path, xmlwritersettings))
-        {
-          serializer.Serialize(writer, this, namespaces);
-        }
+    public void Save(string Path) {
+      var serializer = new XmlSerializer(typeof(MkvChapters), "");
+      var xmlwritersettings = new XmlWriterSettings();
+      xmlwritersettings.Indent = true;
+      xmlwritersettings.NewLineOnAttributes = true;
+      xmlwritersettings.Encoding = new UTF8Encoding(false);
+      var namespaces = new XmlSerializerNamespaces();
+      namespaces.Add("", "");
+      using (var writer = XmlWriter.Create(Path, xmlwritersettings)) {
+        serializer.Serialize(writer, this, namespaces);
       }
-      public static Chapters Load(string Path)
-      {
-        var serializer = new XmlSerializer(typeof(Chapters), "");
-        using (var reader = new StreamReader(Path))
-        {
-          return serializer.Deserialize(reader) as Chapters;
-        }
+    }
+    public static MkvChapters Load(string Path) {
+      var serializer = new XmlSerializer(typeof(MkvChapters), "");
+      using (var reader = new StreamReader(Path)) {
+        return serializer.Deserialize(reader) as MkvChapters;
       }
+    }
   }
 
   [XmlTypeAttribute(AnonymousType = true)]
-  public class EditionEntry
-  {
+  public class EditionEntry {
     [XmlElementAttribute]
     public string EditionFlagHidden { get; set; }
     [XmlElementAttribute]
@@ -50,8 +44,7 @@ namespace Mkv {
   }
 
   [XmlTypeAttribute(AnonymousType = true)]
-  public class ChapterAtom
-  {
+  public class ChapterAtom {
     [XmlElementAttribute]
     public string ChapterUID { get; set; }
     [XmlElementAttribute]
@@ -65,8 +58,7 @@ namespace Mkv {
   }
 
   [XmlTypeAttribute(AnonymousType = true)]
-  public class ChapterDisplay
-  {
+  public class ChapterDisplay {
     [XmlElementAttribute]
     public string ChapterString { get; set; }
     [XmlElementAttribute]

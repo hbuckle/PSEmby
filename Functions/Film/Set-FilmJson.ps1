@@ -20,9 +20,11 @@ function Set-FilmJson {
 
       if (Test-Path $output) {
         $jsonMovie = Read-FilmJson -Path $output
+        $currentString = [System.IO.File]::ReadAllText($output)
       }
       else {
         $jsonMovie = [JsonMetadata.Models.JsonMovie]::new()
+        $currentString = '{}'
       }
       if (!$PSBoundParameters.ContainsKey('TmdbId') -and $null -eq $jsonMovie.tmdbid) {
         Write-Error 'TmdbId is required'
@@ -64,7 +66,7 @@ function Set-FilmJson {
 
       $outputString = ConvertTo-JsonSerialize -InputObject $jsonMovie
       $hasDifference = $false
-      $diffResult = Compare-String -ReferenceString ([System.IO.File]::ReadAllText($output)) -DifferenceString $outputString -Result ([ref]$hasDifference)
+      $diffResult = Get-StringDiff -ReferenceString $currentString -DifferenceString $outputString -Result ([ref]$hasDifference)
       if ($hasDifference) {
         if ($PSCmdlet.ShouldProcess("Performing the operation `"Set Content`" on target `"Path: ${output}`" with content:`n$diffResult", 'Set Content', $output)) {
           $outputString | Set-Content $output -NoNewline
