@@ -15,22 +15,28 @@ function Set-MkvChapterName {
       $count = 1
       $hiddencount = 1
       foreach ($chapter in $edition.ChapterAtom) {
-        $chapter.ChapterFlagEnabled = '1'
+        if ($null -eq $chapter['ChapterFlagEnabled']) {
+          $chapterFlagEnabled = $chapters.CreateElement('ChapterFlagEnabled')
+          $null = $chapter.PrependChild($chapterFlagEnabled)
+        }
+        $chapter.ChapterFlagEnabled = 1
         $chapter.ChapterDisplay.ChapterLanguage = 'und'
         $chapter.ChapterDisplay.ChapLanguageIETF = 'und'
-        switch ($chapter.ChapterFlagHidden) {
-          '0' {
+        switch ($chapter['ChapterFlagHidden']?.'#text') {
+          0 {
             $name = "Chapter ${count}"
             $count++
             break
           }
-          '1' {
+          1 {
             $name = "Hidden Chapter ${hiddencount}"
             $hiddencount++
             break
           }
           $null {
-            $chapter.ChapterFlagHidden = '0'
+            $chapterFlagHidden = $chapters.CreateElement('ChapterFlagHidden')
+            $null = $chapter.PrependChild($chapterFlagHidden)
+            $chapter.ChapterFlagHidden = 0
             $name = "Chapter ${count}"
             $count++
             break

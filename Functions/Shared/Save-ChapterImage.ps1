@@ -4,7 +4,7 @@ function Save-ChapterImage {
     [string]$InputFile,
     [string]$OutputPath = ((Get-Item $InputFile).DirectoryName + '\Chapters\' + (Get-Item $InputFile).BaseName)
   )
-  $ffprobe = Get-Ffprobe -InputFile $InputFile
+  $ffprobe = Get-Ffprobe -InputFile $InputFile -AsHashtable
   if ($ffprobe['chapters'].Count -gt 0) {
     if (-not(Test-Path $OutputPath)) {
       $null = New-Item $OutputPath -ItemType Directory

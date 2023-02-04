@@ -26,7 +26,7 @@ function Set-MkvProperties {
       }
 
       $mediainfo = Get-MediaInfo -InputFile $file.FullName -AsHashtable
-      $ffprobe = Get-Ffprobe -InputFile $file.FullName
+      $ffprobe = Get-Ffprobe -InputFile $file.FullName -AsHashtable
       $video = $mediainfo.media.track | Where-Object { $_.'@type' -eq 'Video' }
       $audio = @(
         $mediainfo.media.track | Where-Object { $_.'@type' -eq 'Audio' }
@@ -76,6 +76,13 @@ function Set-MkvProperties {
       if ($mkvinfo.global_tags.Count -gt 0 -or $mkvinfo.track_tags.Count -gt 0) {
         if ($PSCmdlet.ShouldProcess($file.FullName, 'Clear all tags')) {
           $null = & mkvpropedit $file.FullName --tags all:
+        }
+      }
+
+      $mkvinfo.attachments | ForEach-Object {
+        $attachmentId = $_.properties.uid
+        if ($PSCmdlet.ShouldProcess($file.FullName, "Delete attachment ${attachmentId}")) {
+          $null = & mkvpropedit $file.FullName --delete-attachment "=${attachmentId}"
         }
       }
 
@@ -145,6 +152,7 @@ function Get-MkvAudioName {
   $name = [System.Text.StringBuilder]::new()
 
   $formats = @{
+    'AAC LC'          = 'AAC'
     'AAC LC SBR'      = 'HE-AAC'
     'AC-3'            = 'Dolby Digital'
     'DTS'             = 'DTS'
