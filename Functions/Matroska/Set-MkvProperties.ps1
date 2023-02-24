@@ -103,11 +103,11 @@ function Get-MkvVideoName {
   $hdr_formats = @()
   if ($Track['HDR_Format'] -match 'Dolby Vision') {
     $dovi_info = Get-DoviInfo -InputFile $InputFile
-    if ($null -eq $dovi_info.SubProfile) {
+    if ($null -eq $dovi_info.ELType) {
       $dovi_format = "Dolby Vision $($dovi_info.Profile).$($dovi_info.CrossCompatibilityID)"
     }
     else {
-      $dovi_format = "Dolby Vision $($dovi_info.Profile).$($dovi_info.CrossCompatibilityID) $($dovi_info.SubProfile)"
+      $dovi_format = "Dolby Vision $($dovi_info.Profile).$($dovi_info.CrossCompatibilityID) $($dovi_info.ELType)"
     }
     $hdr_formats += $dovi_format
   }
