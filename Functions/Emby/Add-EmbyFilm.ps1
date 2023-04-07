@@ -16,6 +16,6 @@ function Add-EmbyFilm {
   Start-EmbyScheduledTask -Name 'Scan media library' -Wait
   $output = [System.IO.Path]::ChangeExtension($file.FullName, '.json')
   $filmJson = Read-FilmJson -Path $output
-  $filmJson.people | Where-Object id -NE 0 | Update-EmbyPerson
+  $filmJson.people | Where-Object id -NE 0 | Sync-EmbyPerson
   Start-EmbyScheduledTask -Name 'Set chapter paths'
 }

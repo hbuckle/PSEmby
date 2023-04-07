@@ -1,4 +1,4 @@
-function Update-EmbyPerson {
+function Sync-EmbyPerson {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
@@ -9,7 +9,7 @@ function Update-EmbyPerson {
   process {
     foreach ($item in $Id) {
       $person = Get-EmbyPerson -Id $item
-      Write-Progress -Activity 'Update-EmbyPerson' -Status $person.Name
+      Write-Progress -Activity 'Sync-EmbyPerson' -Status $person.Name
       $null = Invoke-Emby -Path "Items/${item}/Refresh" -Query @{
         Recursive           = $true
         ImageRefreshMode    = 'FullRefresh'
@@ -20,6 +20,6 @@ function Update-EmbyPerson {
     }
   }
   end {
-    Write-Progress -Activity 'Update-EmbyPerson' -Completed
+    Write-Progress -Activity 'Sync-EmbyPerson' -Completed
   }
 }

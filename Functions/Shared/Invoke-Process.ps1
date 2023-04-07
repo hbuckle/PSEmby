@@ -1,7 +1,3 @@
-<#
-.SYNOPSIS
-Wrap Start-Process to better handle stderr and exit codes
-#>
 function Invoke-Process {
   [CmdletBinding()]
   param (

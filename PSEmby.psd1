@@ -53,6 +53,6 @@
     'Set-SeasonJson',
     'Set-SeriesJson',
     'Start-EmbyScheduledTask',
-    'Update-EmbyPerson'
+    'Sync-EmbyPerson'
   )
 }
