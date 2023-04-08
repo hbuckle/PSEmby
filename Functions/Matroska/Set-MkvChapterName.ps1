@@ -21,6 +21,10 @@ function Set-MkvChapterName {
         }
         $chapter.ChapterFlagEnabled = 1
         $chapter.ChapterDisplay.ChapterLanguage = 'und'
+        if ($null -eq $chapter.ChapterDisplay['ChapLanguageIETF']) {
+          $chapLanguageIETF = $chapters.CreateElement('ChapLanguageIETF')
+          $null = $chapter.ChapterDisplay.AppendChild($chapLanguageIETF)
+        }
         $chapter.ChapterDisplay.ChapLanguageIETF = 'und'
         switch ($chapter['ChapterFlagHidden']?.'#text') {
           0 {

@@ -1,9 +1,18 @@
 function Get-MediaInfo {
   [CmdletBinding()]
   param (
-    [string]$InputFile,
+    [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+    [ValidateNotNullOrEmpty()]
+    [string[]]$InputFile,
+
     [switch]$AsHashtable
   )
-  & mediainfo --Full --Output=JSON $InputFile |
-    ConvertFrom-Json -Depth 99 -AsHashtable:$($AsHashtable.ToBool())
+  begin {}
+  process {
+    foreach ($item in $InputFile) {
+      & mediainfo --Full --Output=JSON $InputFile |
+        ConvertFrom-Json -Depth 99 -AsHashtable:$($AsHashtable.ToBool())
+    }
+  }
+  end {}
 }
