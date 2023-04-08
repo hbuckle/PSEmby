@@ -75,10 +75,11 @@ function Set-EpisodeJson {
         $jsonEpisode.people.Clear()
         $tmdbEpisode.crew | Where-Object job -EQ 'Director' |
           Add-JsonObjectPerson -Type Director -JsonObject $jsonEpisode
+        $jsonEpisode.overview = Get-StandardString -InputString $jsonEpisode.overview
 
         $outputString = ConvertTo-JsonSerialize -InputObject $jsonEpisode
         $hasDifference = $false
-        $diffResult = Get-StringDiff -ReferenceString $currentString -DifferenceString $outputString -Result ([ref]$hasDifference)
+        $diffResult = Get-Dyff -ReferenceString $currentString -DifferenceString $outputString -Result ([ref]$hasDifference)
         if ($hasDifference) {
           if ($PSCmdlet.ShouldProcess("Performing the operation `"Set Content`" on target `"Path: ${output}`" with content:`n$diffResult", 'Set Content', $output)) {
             $outputString | Set-Content $output -NoNewline
