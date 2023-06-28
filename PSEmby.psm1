@@ -30,3 +30,11 @@ do {
   }
 }
 while ($typeerror.Count -gt 0)
+
+if (-not(Test-Path "$PSScriptRoot\Tools\Scraper\bin\Release\net7.0\Scraper.exe")) {
+  Push-Location "$PSScriptRoot\Tools\Scraper"
+  & dotnet publish -c Release
+  Pop-Location
+}
+Set-Alias -Name 'Scraper' -Value "$PSScriptRoot\Tools\Scraper\bin\Release\net7.0\Scraper.exe"
+. "$PSScriptRoot\Tools\Scraper\bin\Release\net7.0\playwright.ps1" install

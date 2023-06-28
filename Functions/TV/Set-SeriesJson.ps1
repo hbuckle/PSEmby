@@ -20,6 +20,9 @@ function Set-SeriesJson {
       if (!$PSBoundParameters.ContainsKey('TmdbId') -and $null -eq $jsonSeries.tmdbid) {
         Write-Error 'TmdbId is required'
       }
+      if ($PSBoundParameters.ContainsKey('TmdbId')) {
+        $jsonSeries.tmdbid = $TmdbId
+      }
 
       $tmdbShow = Get-TmdbTvShow -Id $jsonSeries.tmdbid
 

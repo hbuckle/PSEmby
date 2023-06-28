@@ -17,8 +17,8 @@ function Get-FilmDescription {
     return
   }
   $filmuri = "https://www.radiotimes.com$($film.url)"
+  $reviewpage = & Scraper $filmuri
   $parser = [AngleSharp.Html.Parser.HtmlParser]::new()
-  $reviewpage = Invoke-RestMethod $filmuri
   $reviewdocument = $parser.ParseDocument($reviewpage)
   $review = $reviewdocument.GetElementById('show-review-review-region')?.GetElementsByClassName('editor-content')?.TextContent?.Trim()
   Write-Host 'Review:'
