@@ -49,9 +49,11 @@ function Set-MkvProperties {
         $flag_default = $i -eq 0
         $mediaInfoTrack = $audio[$i]
         $mkvinfoTrack = $mkvinfo.tracks | Where-Object { $_.properties.uid -eq $mediaInfoTrack.UniqueID }
-        if ($mediaInfoTrack['Title'] -match 'Commentary' -and !$mkvinfoTrack.properties['flag_commentary']) {
-          if ($PSCmdlet.ShouldProcess($file.FullName, "Set track $($mediaInfoTrack.UniqueID) commentary flag = True")) {
-            $null = & mkvpropedit --edit "track:=$($mediaInfoTrack.UniqueID)" --set flag-commentary=True --set flag-default=False $file.FullName
+        if ($mediaInfoTrack['Title'] -match 'Commentary') {
+          if (!$mkvinfoTrack.properties['flag_commentary']) {
+            if ($PSCmdlet.ShouldProcess($file.FullName, "Set track $($mediaInfoTrack.UniqueID) commentary flag = True")) {
+              $null = & mkvpropedit --edit "track:=$($mediaInfoTrack.UniqueID)" --set flag-commentary=True --set flag-default=False $file.FullName
+            }
           }
           continue
         }
