@@ -26,6 +26,7 @@ function Add-JsonObjectPerson {
         $jsonPerson.role = $item.character
         if ($jsonPerson.role -in 'Composer', 'Director', 'Guest star', 'Producer', 'Writer') {
           Write-Warning "$($JsonObject.title) - $($jsonPerson.name) has role $($jsonPerson.role)"
+          $jsonPerson.role = "($($jsonPerson.role))"
         }
       }
       $JsonObject.people.Add($jsonPerson)

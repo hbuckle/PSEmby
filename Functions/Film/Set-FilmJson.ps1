@@ -6,6 +6,8 @@ function Set-FilmJson {
     [string[]]$InputFile,
 
     [Int64]$TmdbId,
+    [ValidateSet('Action', 'Comedy', 'Horror', 'Science Fiction', 'Western')]
+    [string[]]$Genre,
     [string]$Description,
     [string]$ParentalRating
   )
@@ -49,7 +51,7 @@ function Set-FilmJson {
       $jsonMovie.tmdbid = $tmdbFilm.id
       $jsonMovie.tmdbcollectionid = $tmdbFilm.belongs_to_collection?.id
       $jsonMovie.lockdata = $true
-      $jsonMovie.genres = $tmdbFilm.genres | Select-Object -ExpandProperty name
+      # $jsonMovie.genres = $Genre
       $jsonMovie.studios = @()
       $jsonMovie.tags = @()
       $jsonMovie.people.Clear()
