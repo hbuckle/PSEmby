@@ -37,4 +37,4 @@ if (-not(Test-Path "$PSScriptRoot\Tools\Scraper\bin\Release\net8.0\Scraper.exe")
   Pop-Location
 }
 Set-Alias -Name 'Scraper' -Value "$PSScriptRoot\Tools\Scraper\bin\Release\net8.0\Scraper.exe"
-. "$PSScriptRoot\Tools\Scraper\bin\Release\net7.0\playwright.ps1" install
+. "$PSScriptRoot\Tools\Scraper\bin\Release\net8.0\playwright.ps1" install

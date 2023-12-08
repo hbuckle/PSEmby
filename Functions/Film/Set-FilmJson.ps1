@@ -6,7 +6,7 @@ function Set-FilmJson {
     [string[]]$InputFile,
 
     [Int64]$TmdbId,
-    [ValidateSet('Action', 'Comedy', 'Horror', 'Science Fiction', 'Western')]
+    [ValidateSet('Action', 'Drama', 'Comedy', 'Fantasy', 'Horror', 'Romance', 'Science Fiction', 'Thriller', 'War', 'Western')]
     [string[]]$Genre,
     [string]$Description,
     [string]$ParentalRating
@@ -36,8 +36,8 @@ function Set-FilmJson {
       }
       Write-Progress -Activity 'Set-FilmJson' -Status $file.FullName
 
-      $tmdbFilm = Get-TmdbFilm -Id $TmdbId
-      $credits = Get-TmdbFilmCredits -Id $tmdbFilm.id
+      $tmdbFilm = Get-TmdbFilm -Id $TmdbId -Verbose:$false
+      $credits = Get-TmdbFilmCredits -Id $tmdbFilm.id -Verbose:$false
 
       $jsonMovie.title = Get-TitleCaseString $tmdbFilm.title
       $jsonMovie.originaltitle = ''
@@ -51,13 +51,15 @@ function Set-FilmJson {
       $jsonMovie.tmdbid = $tmdbFilm.id
       $jsonMovie.tmdbcollectionid = $tmdbFilm.belongs_to_collection?.id
       $jsonMovie.lockdata = $true
-      # $jsonMovie.genres = $Genre
+      if ($PSBoundParameters.ContainsKey('Genre')) {
+        $jsonMovie.genres = $Genre
+      }
       $jsonMovie.studios = @()
       $jsonMovie.tags = @()
       $jsonMovie.people.Clear()
-      $credits.crew | Where-Object job -EQ 'Director' | Add-JsonObjectPerson -Type Director -JsonObject $jsonMovie
-      $credits.crew | Where-Object job -In 'Writer', 'Screenplay' | Select-Object -Unique | Add-JsonObjectPerson -Type Writer -JsonObject $jsonMovie
-      $credits.cast | Add-JsonObjectPerson -Type Actor -JsonObject $jsonMovie
+      $credits.crew | Where-Object job -EQ 'Director' | Add-JsonObjectPerson -Type Director -JsonObject $jsonMovie -Verbose:$false
+      $credits.crew | Where-Object job -In 'Writer', 'Screenplay' | Select-Object -Unique | Add-JsonObjectPerson -Type Writer -JsonObject $jsonMovie -Verbose:$false
+      $credits.cast | Add-JsonObjectPerson -Type Actor -JsonObject $jsonMovie -Verbose:$false
 
       if ($PSBoundParameters.ContainsKey('Description')) {
         $jsonMovie.overview = $Description

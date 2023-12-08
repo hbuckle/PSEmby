@@ -6,10 +6,8 @@ function Get-FilmDescription {
     [string]$Title
   )
   $searchterm = [System.Uri]::EscapeUriString($Title)
-  $listings = Invoke-RestMethod "https://search.api.immediate.co.uk/v4/search?sitekey=radiotimes&search=${searchterm}&tab=programmes-films"
-  $films = $listings.data.results | Where-Object {
-    $_.categories.name -eq 'Film'
-  }
+  $listings = Invoke-RestMethod "https://www.radiotimes.com/api/search-frontend/search?q=${searchterm}&tab=broadcast"
+  $films = $listings.searchResults.items
   $film = $films | Select-Object title, description, url |
     Out-ConsoleGridView -OutputMode Single
   if ($null -eq $film) {
