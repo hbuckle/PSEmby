@@ -1,6 +1,5 @@
 $ErrorActionPreference = 'Stop'
 $InformationPreference = 'Continue'
-Set-StrictMode -Version Latest
 [System.Console]::InputEncoding = [System.Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 if (-not(Test-Path "$PSScriptRoot\paths.json")) {

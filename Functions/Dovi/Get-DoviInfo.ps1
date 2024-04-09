@@ -6,7 +6,7 @@ function Get-DoviInfo {
   $rpu = New-TemporaryFile -WhatIf:$false -Confirm:$false | Select-Object -ExpandProperty FullName
   if ($item.Extension -eq '.mkv') {
     $ffprobe = Get-Ffprobe -InputFile $InputFile
-    $side_data = $ffprobe.streams[0].side_data_list | Where-Object side_data_type -EQ 'DOVI configuration record'
+    $side_data = $ffprobe.streams[0]?.side_data_list | Where-Object side_data_type -EQ 'DOVI configuration record'
     if ($null -ne $side_data) {
       $property = @{
         Profile              = $side_data.dv_profile
@@ -14,8 +14,8 @@ function Get-DoviInfo {
         CrossCompatibilityID = $side_data.dv_bl_signal_compatibility_id
       }
       if ($side_data.dv_profile -eq 7) {
-        & ffmpeg -v quiet -i $InputFile -c:v copy -vbsf hevc_mp4toannexb -frames: 1 -f hevc - |
-          dovi_tool extract-rpu - -o $rpu
+        & ffmpeg -v quiet -i $InputFile -c:v copy -bsf:v hevc_mp4toannexb -frames: 1 -f hevc - |
+          & dovi_tool extract-rpu - -o $rpu | Out-Null
         $dovi_info = & dovi_tool info -i $rpu -f 0 | Select-Object -Skip 1 | ConvertFrom-Json -Depth 99
         $property.ELType = $dovi_info.el_type
       }
