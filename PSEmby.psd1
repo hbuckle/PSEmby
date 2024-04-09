@@ -14,6 +14,7 @@
     'ConvertFrom-JsonSerialize',
     'ConvertTo-JsonSerialize',
     'Export-DoviRpu',
+    'Export-Pgc',
     'Find-EmbyItem',
     'Find-TmdbFilm',
     'Find-TmdbTvShow',
