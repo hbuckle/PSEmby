@@ -20,16 +20,6 @@ Get-ChildItem "$PSScriptRoot/Functions" -Recurse -Include '*.ps1' | ForEach-Obje
   . $($_.FullName)
 }
 
-do {
-  Get-ChildItem "$PSScriptRoot/Classes" -Recurse -Include '*.cs' | ForEach-Object {
-    try {
-      Add-Type -Path $_.FullName -ErrorVariable 'typeerror'
-    }
-    catch {}
-  }
-}
-while ($typeerror.Count -gt 0)
-
 if (-not(Test-Path "$PSScriptRoot\Tools\Scraper\bin\Release\net8.0\Scraper.exe")) {
   Push-Location "$PSScriptRoot\Tools\Scraper"
   & dotnet publish -c Release
