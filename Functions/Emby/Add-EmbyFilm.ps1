@@ -15,6 +15,7 @@ function Add-EmbyFilm {
   $description = Get-FilmDescription -Title $tmdbFilm.title
   $rating = Get-BBFCRating -Title $tmdbFilm.title
   Set-FilmJson -InputFile $file.FullName -TmdbId $tmdbFilm.id -Description $description -ParentalRating $rating -Genre $Genre
+  Set-FilmNfo -InputFile $file.FullName -TmdbId $tmdbFilm.id -Description $description -ParentalRating $rating -Genre $Genre
   Set-MkvProperties -InputFile $file.FullName
   Save-ChapterImage -InputFile $file.FullName
   Start-EmbyScheduledTask -Name 'Scan media library' -Wait

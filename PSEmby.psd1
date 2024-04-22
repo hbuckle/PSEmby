@@ -10,7 +10,6 @@
   RequiredAssemblies = @()
   FunctionsToExport  = @(
     'Add-EmbyFilm',
-    'Add-FilmJsonCollection',
     'ConvertFrom-JsonSerialize',
     'ConvertTo-JsonSerialize',
     'Export-DoviRpu',
@@ -26,10 +25,12 @@
     'Get-Ffprobe',
     'Get-FileSafeName',
     'Get-FilmDescription',
+    'Get-KodiMovie',
     'Get-MediaInfo',
     'Get-TitleCaseString',
     'Get-TmdbFilm',
     'Get-TmdbFilmCredits',
+    'Get-TmdbFilmReleaseDate',
     'Get-TmdbPerson',
     'Get-TmdbTvEpisode',
     'Get-TmdbTvEpisodeGroup',
@@ -37,7 +38,7 @@
     'Get-TmdbTvShow',
     'Import-SeriesJson',
     'Invoke-Emby',
-    'Invoke-Process',
+    'Invoke-Kodi',
     'Invoke-Tmdb',
     'Optimize-JPEG',
     'Read-EpisodeJson',
@@ -49,11 +50,13 @@
     'Save-YouTubePlaylist',
     'Set-EpisodeJson',
     'Set-FilmJson',
+    'Set-FilmNfo',
     'Set-MkvChapterName',
     'Set-MkvProperties',
     'Set-SeasonJson',
     'Set-SeriesJson',
     'Start-EmbyScheduledTask',
-    'Sync-EmbyPerson'
+    'Sync-EmbyPerson',
+    'Sync-KodiMovie'
   )
 }
