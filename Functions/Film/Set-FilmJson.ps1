@@ -6,12 +6,14 @@ function Set-FilmJson {
     [string[]]$InputFile,
 
     [Int64]$TmdbId,
-    [ValidateSet('Action', 'Drama', 'Comedy', 'Fantasy', 'Horror', 'Romance', 'Science Fiction', 'Thriller', 'War', 'Western')]
+
+    [ValidateSet('Action', 'Adventure', 'Drama', 'Comedy', 'Fantasy', 'Horror', 'Romance', 'Science Fiction', 'Thriller', 'War', 'Western')]
     [string[]]$Genre,
+
     [string]$Description,
+
     [string]$ParentalRating
   )
-  begin {}
   process {
     foreach ($item in $InputFile) {
       $file = Get-Item $item
@@ -19,6 +21,12 @@ function Set-FilmJson {
         Write-Error "Input file '$($file.FullName)' was not in the correct format"
       }
       $output = [System.IO.Path]::ChangeExtension($file.FullName, '.json')
+      if ([regex]::IsMatch($file.BaseName, '^[\w\s]+Part [1-9]$')) {
+        $trimmedName = $file.BaseName.Substring(0, $file.BaseName.Length - ' Part x'.Length)
+        if ([System.IO.Directory]::GetFiles($file.Directory.FullName, "${trimmedName} Part *$($file.Extension)").Count -gt 1) {
+          $output = Join-Path $file.Directory.FullName "${trimmedName}.json"
+        }
+      }
 
       if (Test-Path $output) {
         $jsonMovie = Read-FilmJson -Path $output
@@ -38,6 +46,7 @@ function Set-FilmJson {
 
       $tmdbFilm = Get-TmdbFilm -Id $TmdbId -Verbose:$false
       $credits = Get-TmdbFilmCredits -Id $tmdbFilm.id -Verbose:$false
+      $tags = Get-FilmTag -InputFile $file.FullName
 
       $jsonMovie.title = Get-TitleCaseString $tmdbFilm.title
       $jsonMovie.originaltitle = ''
@@ -55,7 +64,7 @@ function Set-FilmJson {
         $jsonMovie.genres = $Genre
       }
       $jsonMovie.studios = @()
-      $jsonMovie.tags = @()
+      $jsonMovie.tags = $tags
       $jsonMovie.people.Clear()
       $credits.crew | Where-Object job -EQ 'Director' | Add-JsonObjectPerson -Type Director -JsonObject $jsonMovie -Verbose:$false
       $credits.crew | Where-Object job -In 'Writer', 'Screenplay' | Select-Object -Unique | Add-JsonObjectPerson -Type Writer -JsonObject $jsonMovie -Verbose:$false
@@ -77,8 +86,6 @@ function Set-FilmJson {
           $outputString | Set-Content $output -NoNewline
         }
       }
-
-      Add-FilmJsonCollection -InputFile $file.FullName
     }
   }
   end {
