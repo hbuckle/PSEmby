@@ -9,11 +9,11 @@ if (-not(Test-Path "$PSScriptRoot\paths.json")) {
 
 @(
   'AngleSharp.dll',
-  'JsonMetadata.dll'
+  'JsonMetadata.dll',
+  'MySqlConnector.dll'
 ) | ForEach-Object {
   $path = Join-Path "$PSScriptRoot/lib" $_
-  $bytes = Get-Content $path -AsByteStream -Raw
-  [System.Reflection.Assembly]::Load($bytes)
+  Add-Type -Path $Path
 }
 
 Get-ChildItem "$PSScriptRoot/Functions" -Recurse -Include '*.ps1' | ForEach-Object {
