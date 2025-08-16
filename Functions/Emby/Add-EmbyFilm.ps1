@@ -6,12 +6,14 @@ function Add-EmbyFilm {
     [string]$InputFile,
 
     [Parameter(Mandatory = $true)]
-    [ValidateSet('Action', 'Drama', 'Comedy', 'Fantasy', 'Horror', 'Romance', 'Science Fiction', 'Thriller', 'War', 'Western')]
-    [string[]]$Genre
+    [ValidateSet('Action', 'Adventure', 'Drama', 'Comedy', 'Crime', 'Fantasy', 'Horror', 'Romance', 'Science Fiction', 'Thriller', 'War', 'Western')]
+    [string[]]$Genre,
+
+    [string]$Title
   )
   $file = Get-Item $InputFile
   Optimize-JPEG -SourceFolder $file.DirectoryName
-  $tmdbFilm = Find-TmdbFilm -Title $file.BaseName
+  $tmdbFilm = Find-TmdbFilm -Title ($Title ?? $file.BaseName)
   $description = Get-FilmDescription -Title $tmdbFilm.title
   $rating = Get-BBFCRating -Title $tmdbFilm.title
   Set-FilmJson -InputFile $file.FullName -TmdbId $tmdbFilm.id -Description $description -ParentalRating $rating -Genre $Genre

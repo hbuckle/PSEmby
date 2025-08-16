@@ -7,7 +7,7 @@ function Set-FilmJson {
 
     [Int64]$TmdbId,
 
-    [ValidateSet('Action', 'Adventure', 'Drama', 'Comedy', 'Fantasy', 'Horror', 'Romance', 'Science Fiction', 'Thriller', 'War', 'Western')]
+    [ValidateSet('Action', 'Adventure', 'Drama', 'Comedy', 'Crime', 'Fantasy', 'Horror', 'Romance', 'Science Fiction', 'Thriller', 'War', 'Western')]
     [string[]]$Genre,
 
     [string]$Description,
@@ -21,7 +21,7 @@ function Set-FilmJson {
         Write-Error "Input file '$($file.FullName)' was not in the correct format"
       }
       $output = [System.IO.Path]::ChangeExtension($file.FullName, '.json')
-      if ([regex]::IsMatch($file.BaseName, '^[\w\s]+Part [1-9]$')) {
+      if ([regex]::IsMatch($file.BaseName, '^.*Part [1-9]$')) {
         $trimmedName = $file.BaseName.Substring(0, $file.BaseName.Length - ' Part x'.Length)
         if ([System.IO.Directory]::GetFiles($file.Directory.FullName, "${trimmedName} Part *$($file.Extension)").Count -gt 1) {
           $output = Join-Path $file.Directory.FullName "${trimmedName}.json"
@@ -47,15 +47,16 @@ function Set-FilmJson {
       $tmdbFilm = Get-TmdbFilm -Id $TmdbId -Verbose:$false
       $credits = Get-TmdbFilmCredits -Id $tmdbFilm.id -Verbose:$false
       $tags = Get-FilmTag -InputFile $file.FullName
+      $releaseDate = [datetime]::ParseExact($tmdbFilm.release_date, 'yyyy-MM-dd', [CultureInfo]::InvariantCulture)
 
       $jsonMovie.title = Get-TitleCaseString $tmdbFilm.title
       $jsonMovie.originaltitle = ''
       $jsonMovie.tagline = ''
       $jsonMovie.customrating = ''
       $jsonMovie.communityrating = $null
-      $jsonMovie.releasedate = $null
+      $jsonMovie.releasedate = $releaseDate
       $jsonMovie.sorttitle = $file.Directory.Name
-      $jsonMovie.year = ([datetime]$tmdbFilm.release_date).Year
+      $jsonMovie.year = $releaseDate.Year
       $jsonMovie.imdbid = $tmdbFilm.imdb_id
       $jsonMovie.tmdbid = $tmdbFilm.id
       $jsonMovie.tmdbcollectionid = $tmdbFilm.belongs_to_collection?.id

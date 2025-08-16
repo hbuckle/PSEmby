@@ -21,7 +21,7 @@ function Set-FilmNfo {
 
     [Int64]$TmdbId,
 
-    [ValidateSet('Action', 'Adventure', 'Drama', 'Comedy', 'Fantasy', 'Horror', 'Romance', 'Science Fiction', 'Thriller', 'War', 'Western')]
+    [ValidateSet('Action', 'Adventure', 'Drama', 'Comedy', 'Crime', 'Fantasy', 'Horror', 'Romance', 'Science Fiction', 'Thriller', 'War', 'Western')]
     [string[]]$Genre = @(),
 
     [string]$Description = [string]::Empty,
@@ -36,7 +36,7 @@ function Set-FilmNfo {
         Write-Error "Input file '$($file.FullName)' was not in the correct format"
       }
       $output = [System.IO.Path]::ChangeExtension($file.FullName, '.nfo')
-      if ([regex]::IsMatch($file.BaseName, '^[\w\s]+Part [1-9]$')) {
+      if ([regex]::IsMatch($file.BaseName, '^.*Part [1-9]$')) {
         $trimmedName = $file.BaseName.Substring(0, $file.BaseName.Length - ' Part x'.Length)
         if ([System.IO.Directory]::GetFiles($file.Directory.FullName, "${trimmedName} Part *$($file.Extension)").Count -gt 1) {
           $output = Join-Path $file.Directory.FullName "${trimmedName}.nfo"
@@ -80,7 +80,7 @@ function Set-FilmNfo {
           [XElement]::new('plot', (Get-StandardString -InputString $Description)),
           ($Genre | ForEach-Object {[XElement]::new('genre', $_)}),
           ($credits.crew | Where-Object job -EQ 'Director' | ForEach-Object {[XElement]::new('director', $_.name)}),
-          ($credits.crew | Where-Object job -In 'Writer', 'Screenplay' | ForEach-Object {[XElement]::new('credits', $_.name)}),
+          ($credits.crew | Where-Object job -In 'Writer', 'Screenplay' | Select-Object -Unique | ForEach-Object {[XElement]::new('credits', $_.name)}),
           ($tags | ForEach-Object {[XElement]::new('tag', $_)})
         )
       )
