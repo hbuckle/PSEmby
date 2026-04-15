@@ -16,6 +16,10 @@ function Add-EmbyFilm {
   $tmdbFilm = Find-TmdbFilm -Title ($Title ?? $file.BaseName)
   $description = Get-FilmDescription -Title $tmdbFilm.title
   $rating = Get-BBFCRating -Title $tmdbFilm.title
+  $jsonFile = [System.IO.Path]::ChangeExtension($InputFile, 'json')
+  if (Test-Path -Path $jsonFile) {
+    Remove-Item -Path $jsonFile -Force
+  }
   Set-FilmJson -InputFile $file.FullName -TmdbId $tmdbFilm.id -Description $description -ParentalRating $rating -Genre $Genre
   Set-FilmNfo -InputFile $file.FullName -TmdbId $tmdbFilm.id -Description $description -ParentalRating $rating -Genre $Genre
   Set-MkvProperties -InputFile $file.FullName

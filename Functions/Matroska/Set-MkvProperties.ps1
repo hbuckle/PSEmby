@@ -168,6 +168,7 @@ function Get-MkvAudioName {
     'FLAC'            = 'FLAC'
     'MLP FBA'         = 'Dolby TrueHD'
     'MLP FBA 16-ch'   = 'Dolby TrueHD with Dolby Atmos'
+    'Opus'            = 'Opus'
     'PCM'             = 'PCM'
   }
   if ($null -eq $formats[$MediaInfoTrack.Format_String]) {
