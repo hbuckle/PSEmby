@@ -9,21 +9,21 @@ if (-not(Test-Path "$PSScriptRoot\paths.json")) {
 
 @(
   'AngleSharp.dll',
-  'JsonMetadata.dll',
-  'MySqlConnector.dll'
+  'JsonMetadata.dll'
 ) | ForEach-Object {
   $path = Join-Path "$PSScriptRoot/lib" $_
-  Add-Type -Path $Path
+  # Add-Type -Path $Path
+  $null = [Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($path))
 }
 
 Get-ChildItem "$PSScriptRoot/Functions" -Recurse -Include '*.ps1' | ForEach-Object {
   . $($_.FullName)
 }
 
-if (-not(Test-Path "$PSScriptRoot\Tools\Scraper\bin\Release\net8.0\Scraper.exe")) {
+if (-not(Test-Path "$PSScriptRoot\Tools\Scraper\bin\Release\net10.0\Scraper.exe")) {
   Push-Location "$PSScriptRoot\Tools\Scraper"
   & dotnet publish -c Release
   Pop-Location
 }
-Set-Alias -Name 'Scraper' -Value "$PSScriptRoot\Tools\Scraper\bin\Release\net8.0\Scraper.exe"
-. "$PSScriptRoot\Tools\Scraper\bin\Release\net8.0\playwright.ps1" install
+Set-Alias -Name 'Scraper' -Value "$PSScriptRoot\Tools\Scraper\bin\Release\net10.0\Scraper.exe"
+. "$PSScriptRoot\Tools\Scraper\bin\Release\net10.0\playwright.ps1" install

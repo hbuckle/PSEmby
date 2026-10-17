@@ -25,7 +25,6 @@
     'Get-Ffprobe',
     'Get-FileSafeName',
     'Get-FilmDescription',
-    'Get-KodiMovie',
     'Get-MediaInfo',
     'Get-TitleCaseString',
     'Get-TmdbFilm',
@@ -38,7 +37,6 @@
     'Get-TmdbTvShow',
     'Import-SeriesJson',
     'Invoke-Emby',
-    'Invoke-Kodi',
     'Invoke-Tmdb',
     'Optimize-JPEG',
     'Read-EpisodeJson',
@@ -56,7 +54,6 @@
     'Set-SeasonJson',
     'Set-SeriesJson',
     'Start-EmbyScheduledTask',
-    'Sync-EmbyPerson',
-    'Sync-KodiMovie'
+    'Sync-EmbyPerson'
   )
 }
