@@ -20,6 +20,10 @@ function Set-MkvChapterName {
           $null = $chapter.PrependChild($chapterFlagEnabled)
         }
         $chapter.ChapterFlagEnabled = 1
+        if ($null -eq $chapter.ChapterDisplay['ChapterLanguage']) {
+          $chapterLanguage = $chapters.CreateElement('ChapterLanguage')
+          $null = $chapter.ChapterDisplay.AppendChild($chapterLanguage)
+        }
         $chapter.ChapterDisplay.ChapterLanguage = 'und'
         if ($null -eq $chapter.ChapterDisplay['ChapLanguageIETF']) {
           $chapLanguageIETF = $chapters.CreateElement('ChapLanguageIETF')
@@ -45,7 +49,7 @@ function Set-MkvChapterName {
             $count++
             break
           }
-          Default {
+          default {
             throw "Invalid ChapterFlagHidden value $($chapter.ChapterFlagHidden) for $($chapter.ChapterUID)"
           }
         }

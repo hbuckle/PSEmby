@@ -6,7 +6,16 @@ function Add-EmbyFilm {
     [string]$InputFile,
 
     [Parameter(Mandatory = $true)]
-    [ValidateSet('Action', 'Adventure', 'Drama', 'Comedy', 'Crime', 'Fantasy', 'Horror', 'Romance', 'Science Fiction', 'Thriller', 'War', 'Western')]
+    [ValidateSet(
+      'Action', 'Adventure', 'Biopic',
+      'Comedy', 'Courtroom', 'Crime',
+      'Disaster', 'Drama', 'Drugs',
+      'Epic', 'Espionage', 'Fantasy',
+      'Gangster', 'Horror', 'Mystery',
+      'Political', 'Road Trip', 'Romance',
+      'Science Fiction', 'Superhero', 'Sports',
+      'Thriller', 'War', 'Western', 'Zombie'
+    )]
     [string[]]$Genre,
 
     [string]$Title
