@@ -9,7 +9,7 @@ function Find-TmdbFilm {
   )
   $response = Invoke-Tmdb -Path '/search/movie' -Query @{query = $Title}
   $selection = $response.results | Select-Object title, release_date, overview, id |
-    Out-ConsoleGridView -OutputMode Single
+    Out-ConsoleGridView -OutputMode Single -Title 'Find-TmdbFilm' -MinUI
   if ($Full.ToBool()) {
     Get-TmdbFilm -Id $selection.id
   }

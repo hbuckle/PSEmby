@@ -1,11 +1,11 @@
 @{
   RootModule         = 'PSEmby.psm1'
   ModuleVersion      = '2.0'
-  PowerShellVersion  = '7.4'
+  PowerShellVersion  = '7.6'
   GUID               = '7a62f737-f452-4bc9-a289-d15a51f611d8'
   Author             = 'HBuckle'
   RequiredModules    = @(
-    'Microsoft.PowerShell.ConsoleGuiTools'
+    'PSTui'
   )
   RequiredAssemblies = @()
   FunctionsToExport  = @(

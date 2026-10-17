@@ -40,7 +40,7 @@ function Get-BBFCRating {
   } while ($more)
 
   $selection = $results | Select-Object title, date, type, classification |
-    Out-ConsoleGridView -OutputMode Single
+    Out-ConsoleGridView -OutputMode Single -Title 'Get-BBFCRating' -MinUI
   $rating = ''
   if ($null -ne $selection) {
     $rating = "GB-$($selection.classification)"

@@ -9,7 +9,7 @@ function Find-TmdbTvShow {
   )
   $response = Invoke-Tmdb -Path '/search/tv' -Query @{query = $Title}
   $selection = $response.results | Select-Object name, first_air_date, overview, id |
-    Out-ConsoleGridView -OutputMode Single
+    Out-ConsoleGridView -OutputMode Single -Title 'Find-TmdbTvShow' -MinUI
   if ($Full.ToBool()) {
     Get-TmdbTvShow -Id $selection.id
   }
